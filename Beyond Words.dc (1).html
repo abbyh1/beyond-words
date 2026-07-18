@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="./css/app.css">
+<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="./support.js"></script>
+<script src="./src/data/content.js"></script>
+<script src="./src/utils/helpers.js"></script>
+<script src="./src/pages/home.js"></script>
+<script src="./src/pages/flow.js"></script>
+<script src="./src/pages/journeys.js"></script>
+<script src="./src/app.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&amp;family=Karla:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+  html,body{margin:0;padding:0;background:oklch(96.5% 0.012 85);}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  ::selection{background:oklch(85% 0.05 165);}
+  input,textarea,button{font-family:'Karla',sans-serif;}
+  textarea::placeholder,input::placeholder{color:oklch(62% 0.015 85);}
+  @keyframes bwFade{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+  @keyframes bwPop{0%{transform:scale(0.6);opacity:0;}70%{transform:scale(1.08);opacity:1;}100%{transform:scale(1);}}
+  a{color:oklch(52% 0.09 230);}
+  a:hover{color:oklch(45% 0.09 230);}
+</style>
+</helmet>
+<div style="min-height:100vh;background:oklch(96.5% 0.012 85);display:flex;justify-content:center;font-family:'Karla',sans-serif;color:oklch(28% 0.02 280);">
+<div style="width:100%;max-width:min(1400px,98vw);min-height:100vh;background:oklch(96.5% 0.012 85);position:relative;display:flex;flex-direction:column;">
+
+  <sc-if value="{{showNav}}" hint-placeholder-val="{{true}}">
+    <div style="position:sticky;top:0;z-index:40;display:flex;align-items:center;justify-content:space-between;padding:14px clamp(16px,4vw,32px);background:oklch(97.5% 0.008 90 / 0.92);backdrop-filter:blur(10px);border-bottom:1px solid oklch(90% 0.01 90);">
+      <div onClick="{{goHome}}" style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+        <div style="width:30px;height:30px;border-radius:50%;background:oklch(78% 0.09 165);"></div>
+        <div style="font-family:'Quicksand',sans-serif;font-weight:700;font-size:17px;">Beyond Words</div>
+      </div>
+      <div style="position:relative;">
+        <button onClick="{{toggleNav}}" style="border:1.5px solid oklch(85% 0.02 90);background:oklch(99% 0.004 90);cursor:pointer;padding:9px 16px;border-radius:14px;display:flex;align-items:center;gap:8px;font-family:'Quicksand',sans-serif;font-weight:600;font-size:14px;color:oklch(30% 0.02 280);">Menu <span style="{{navChevronStyle}}">⌄</span></button>
+        <sc-if value="{{navOpen}}" hint-placeholder-val="{{false}}">
+          <div style="position:absolute;right:0;top:calc(100% + 8px);background:white;border-radius:16px;box-shadow:0 14px 34px oklch(30% 0.02 280 / 0.2);padding:8px;min-width:210px;display:flex;flex-direction:column;gap:2px;">
+            <sc-for list="{{navMenuItems}}" as="item" hint-placeholder-count="5">
+              <div onClick="{{item.onClick}}" style="{{item.style}}">{{item.label}}</div>
+            </sc-for>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+  </sc-if>
+
+  <div style="width:100%;max-width:{{contentMaxWidth}};margin:0 auto;padding:0 clamp(16px,4vw,32px);display:flex;flex-direction:column;flex:1;">
+
+  <!-- HOME -->
+  <sc-if value="{{isHome}}" hint-placeholder-val="{{true}}">
+    <div key="home" style="animation:bwFade .5s ease both;padding:28px 0 40px;display:flex;flex-direction:column;gap:22px;flex:1;">
+      <div style="margin-top:10px;">
+        <div style="font-family:'Quicksand',sans-serif;font-weight:600;font-size:26px;line-height:1.3;">{{homeGreeting}}</div>
+        <div style="margin-top:8px;font-size:15.5px;color:oklch(45% 0.02 280);line-height:1.55;">A gentle space to describe your pain in your own words — through metaphor, story, and reflection.</div>
+      </div>
+
+      <sc-if value="{{hasDraft}}" hint-placeholder-val="{{false}}">
+        <div onClick="{{resumeDraft}}" style="cursor:pointer;background:oklch(99% 0.004 90);border-radius:22px;padding:18px;box-shadow:0 6px 20px oklch(50% 0.02 280 / 0.06);display:flex;flex-direction:column;gap:12px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <div style="font-family:'Quicksand',sans-serif;font-weight:600;font-size:15px;color:oklch(45% 0.02 280);">Continue where you left off</div>
+            <div style="font-size:13px;color:oklch(52% 0.09 230);font-weight:600;">Resume →</div>
+          </div>
+          <div style="font-size:17px;font-weight:600;">{{draftTitleDisplay}}</div>
+          <div style="display:flex;gap:6px;">
+            <sc-for list="{{storyNodesMini}}" as="node" hint-placeholder-count="6">
+              <div style="{{node.styleMini}}"></div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <div style="display:flex;flex-direction:column;gap:12px;margin-top:4px;">
+        <button onClick="{{startNewEpisode}}" style="{{primaryButtonStyle}}">Start New Episode</button>
+        <button onClick="{{goPast}}" style="border:1.5px solid oklch(85% 0.02 90);cursor:pointer;padding:14px;border-radius:20px;background:transparent;color:oklch(30% 0.02 280);font-family:'Quicksand',sans-serif;font-weight:600;font-size:16px;max-width:360px;width:100%;align-self:center;">View Past Journeys</button>
+        <button onClick="{{goInsights}}" style="border:none;background:transparent;cursor:pointer;color:oklch(45% 0.02 280);font-size:14.5px;padding:8px;text-decoration:underline;text-underline-offset:3px;">Something to reflect on</button>
+      </div>
+
+      <div style="margin-top:auto;padding-top:24px;font-size:12.5px;color:oklch(58% 0.015 90);text-align:center;line-height:1.5;">Nothing is shared unless you choose to. This is your private space — move at your own pace.</div>
+    </div>
+  </sc-if>
+
+  <!-- SETUP -->
+  <sc-if value="{{isSetup}}" hint-placeholder-val="{{false}}">
+    <div key="setup" style="animation:bwFade .4s ease both;display:flex;flex-direction:column;flex:1;">
+      <div style="padding:20px 0 6px;display:flex;align-items:center;gap:12px;">
+        <button onClick="{{goHome}}" style="border:none;background:none;cursor:pointer;font-size:20px;color:oklch(40% 0.02 280);padding:6px;">←</button>
+        <div style="font-family:'Quicksand',sans-serif;font-weight:600;font-size:15px;color:oklch(45% 0.02 280);">New Episode</div>
+      </div>
+      <div style="padding:16px 0 32px;display:flex;flex-direction:column;gap:22px;flex:1;">
+        <div>
+          <div style="font-family:'Quicksand',sans-serif;font-weight:700;font-size:24px;">Let's set the scene</div>
+          <div style="margin-top:6px;font-size:15px;color:oklch(45% 0.02 280);">A few gentle details before we begin. Skip anything you'd rather not answer.</div>
+        </div>
+        <label style="display:flex;flex-direction:column;gap:8px;">
+          <span style="font-size:13.5px;font-weight:600;color:oklch(40% 0.02 280);">Name this episode</span>
+          <input value="{{setupTitle}}" onChange="{{onSetupTitle}}" placeholder="e.g. Back flare after a long day" style="border:1.5px solid oklch(88% 0.015 90);border-radius:14px;padding:14px 16px;font-size:15.5px;background:oklch(99% 0.004 90);outline:none;">
+        </label>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <span style="font-size:13.5px;font-weight:600;color:oklch(40% 0.02 280);">When would you say this happened?</span>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <sc-for list="{{timeOfDayOptions}}" as="opt" hint-placeholder-count="4">
+              <div onClick="{{opt.onClick}}" style="{{opt.style}}">{{opt.label}}</div>
+            </sc-for>
+          </div>
+        </div>
+        <label style="display:flex;flex-direction:column;gap:8px;">
+          <span style="font-size:13.5px;font-weight:600;color:oklch(40% 0.02 280);">What was happening? <span style="font-weight:400;color:oklch(58% 0.015 90);">(optional)</span></span>
+          <textarea value="{{setupContext}}" onChange="{{onSetupContext}}" placeholder="A short line, if you like..." rows="2" style="border:1.5px solid oklch(88% 0.015 90);border-radius:14px;padding:14px 16px;font-size:15px;background:oklch(99% 0.004 90);outline:none;resize:none;font-family:'Karla',sans-serif;"></textarea>
+        </label>
+        <div style="margin-top:auto;display:flex;flex-direction:column;gap:12px;padding-top:10px;">
+          <button onClick="{{beginMap}}" style="{{primaryButtonStyle}}">Begin Map</button>
+          <button onClick="{{goHome}}" style="border:none;background:none;cursor:pointer;color:oklch(50% 0.02 280);font-size:14px;padding:6px;">Save and exit</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- OVERVIEW -->
+  <sc-if value="{{isOverview}}" hint-placeholder-val="{{false}}">
+    <div key="overview" style="animation:bwFade .4s ease both;display:flex;flex-direction:column;flex:1;">
+      <div style="padding:20px 0 6px;display:flex;align-items:center;gap:12px;">
+        <button onClick="{{goHome}}" style="border:none;background:none;cursor:pointer;font-size:20px;color:oklch(40% 0.02 280);padding:6px;">←</button>
+        <div style="font-family:'Quicksand',sans-serif;font-weight:600;font-size:15px;color:oklch(45% 0.02 280);">{{draftTitleDisplay}}</div>
+      </div>
+      <div style="padding:14px 0 32px;display:flex;flex-direction:column;gap:20px;flex:1;">
+        <div>
+          <div style="font-family:'Quicksand',sans-serif;font-weight:700;font-size:24px;">Six gentle steps</div>
+          <div style="margin-top:6px;font-size:15px;color:oklch(45% 0.02 280);">Move through your episode one piece at a time — tap any step, in any order.</div>
+        </div>
+        <div style="display:flex;justify-content:center;padding:6px 0 4px;">
+          <div style="display:flex;gap:10px;">
+            <sc-for list="{{storyNodesHeader}}" as="node" hint-placeholder-count="6">
+              <div style="{{node.styleHeader}}"></div>
+            </sc-for>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <sc-for list="{{stepRows}}" as="row" hint-placeholder-count="6">
+            <div onClick="{{row.onClick}}" style="cursor:pointer;background:oklch(99% 0.004 90);border-radius:18px;padding:14px 16px;display:flex;align-items:center;gap:14px;box-shadow:0 3px 12px oklch(50% 0.02 280 / 0.05);">
+              <div style="{{row.iconStyle}}"></div>
+              <div style="flex:1;">
+                <div style="font-weight:600;font-size:15.5px;">{{row.label}}</div>
+                <div style="font-size:13px;color:oklch(50% 0.02 280);margin-top:2px;">{{row.subtitle}}</div>
+              </div>
+              <div style="font-size:15px;color:oklch(60% 0.02 280);">{{row.trailing}}</div>
+            </div>
+          </sc-for>
+        </div>
+        <div style="margin-top:auto;display:flex;flex-direction:column;gap:10px;padding-top:8px;">
+          <button onClick="{{continueFlow}}" style="{{primaryButtonStyle}}">{{overviewCta}}</button>
+          <div style="text-align:center;font-size:13px;color:oklch(55% 0.015 90);">You can pause, skip, or edit anytime.</div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- STEP SCREENS SHARED CHROME -->
+  <sc-if value="{{isStepScreen}}" hint-placeholder-val="{{false}}">
+    <div key="{{screen}}" style="animation:bwFade .35s ease both;display:flex;flex-direction:column;flex:1;">
+      <div style="padding:18px 0 4px;display:flex;align-items:center;gap:12px;">
+        <button onClick="{{stepBack}}" style="border:none;background:none;cursor:pointer;font-size:20px;color:oklch(40% 0.02 280);padding:6px;">←</button>
+        <div style="font-family:'Quicksand',sans-serif;font-weight:600;font-size:14px;color:oklch(45% 0.02 280);flex:1;">Step {{stepNumber}} · {{stepLabel}}</div>
+        <button onClick="{{stepSkip}}" style="border:none;background:none;cursor:pointer;color:oklch(55% 0.015 90);font-size:13.5px;">Skip</button>
+      </div>
+      <div style="display:flex;justify-content:center;padding:10px 0 4px;">
+        <div style="display:flex;gap:8px;">
+          <sc-for list="{{storyNodesHeader}}" as="node" hint-placeholder-count="6">
+            <div style="{{node.styleHeader}}"></div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="padding:14px 0 24px;display:flex;flex-direction:column;gap:20px;flex:1;overflow-y:auto;">
+
+        <sc-if value="{{isStep1}}" hint-placeholder-val="{{false}}">
+          <div style="font-family:'Quicksand',sans-serif;font-weight:700;font-size:23px;">What did this pain feel like?</div>
+          <div style="font-size:14.5px;color:oklch(45% 0.02 280);margin-top:-10px;">Choose a metaphor that fits, or add your own.</div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;">
+            <sc-for list="{{metaphorOptions}}" as="opt" hint-placeholder-count="8">
+              <div onClick="{{opt.onClick}}" onMouseEnter="{{opt.onMouseEnter}}" onMouseLeave="{{opt.onMouseLeave}}" style="{{opt.cardStyle}}">
+                <div style="{{opt.dotStyle}}"></div>
+                <div style="font-weight:600;font-size:16px;margin-top:10px;">{{opt.label}}</div>
+                <div style="{{opt.descStyle}}">{{opt.desc}}</div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="{{addRowStyle}}">
+            <input value="{{customDraftMetaphor}}" onChange="{{onCustomChangeMetaphor}}" placeholder="Add your own metaphor..." style="{{addInputStyle}}">
+            <button onClick="{{onCustomAddMetaphor}}" style="{{addButtonStyle}}">Add</button>
+          </div>
+          <label style="display:flex;flex-direction:column;gap:8px;">
+            <span style="font-size:13.5px;font-weight:600;color:oklch(40% 0.02 280);">What does this metaphor mean to you?</span>
+            <textarea value="{{painNote}}" onChange="{{onPainNote}}" placeholder="Write a few words..." rows="3" style="{{textareaStyle}}"></textarea>
+          </label>
+        </sc-if>
+
+        <sc-if value="{{isStep2}}" hint-placeholder-val="{{false}}">
+          <div style="font-family:'Quicksand',sans-serif;font-weight:700;font-size:23px;">Where did this happen, and who was around?</div>
+          <div style="font-size:13.5px;font-weight:600;color:oklch(40% 0.02 280);">Where</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <sc-for list="{{placeOptions}}" as="opt" hint-placeholder-count="5">
+              <div onClick="{{opt.onClick}}" style="{{opt.style}}">{{opt.label}}</div>
+            </sc-for>
+          </div>
+          <div style="{{addRowStyle}}">
+            <input value="{{customDraftPlace}}" onChange="{{onCustomChangePlace}}" placeholder="Add your own place..." style="{{addInputStyle}}">
+            <button onClick="{{onCustomAddPlace}}" style="{{addButtonStyle}}">Add</button>
+          </div>
+          <div style="font-size:13.5px;font-weight:600;color:oklch(40% 0.02 280);margin-top:6px;">Who was around <span style="font-weight:400;color:oklch(58% 0.015 90);">(tap all that apply)</span></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <sc-for list="{{peopleOptions}}" as="opt" hint-placeholder-count="5">
+              <div onClick="{{opt.onClick}}" style="{{opt.style}}">{{opt.label}}</div>
+            </sc-for>
+          </div>
+          <div style="{{addRowStyle}}">
+            <input value="{{customDraftPerson}}" onChange="{{onCustomChangePerson}}" placeholder="Add your own person..." style="{{addInputStyle}}">
+            <button onClick="{{onCustomAddPerson}}" style="{{addButtonStyle}}">Add</button>
+          </div>
+          <label style="display:flex;flex-direction:column;gap:8px;margin-top:4px;">
+            <span style="font-size:13.5px;font-weight:600;color:oklch(40% 0.02 280);">Anything else about the setting? <span style="font-weight:400;color:oklch(58% 0.015 90);">(optional)</span></span>
+            <textarea value="{{placeNote}}" onChange="{{onPlaceNote}}" placeholder="A short note, if you like..." rows="2" style="{{textareaStyle}}"></textarea>
+          </label>
+        </sc-if>
+
+        <sc-if value="{{isStep3}}" hint-placeholder-val="{{false}}">
+          <div style="font-family:'Quicksand',sans-serif;font-weight:700;font-size:23px;">Seeing through metaphors</div>
+          <div style="font-size:14.5px;color:oklch(45% 0.02 280);margin-top:-10px;">Switch between the three lenses below — the same metaphors apply to each.</div>
+          <div style="display:flex;gap:6px;background:oklch(93% 0.008 90);border-radius:15px;padding:4px;">
+            <sc-for list="{{lensTabRows}}" as="t" hint-placeholder-count="3">
+              <div onClick="{{t.onClick}}" style="{{t.style}}">{{t.label}}</div>
+            </sc-for>
+          </div>
+          <div style="font-size:15px;font-weight:600;">{{lensPrompt}}</div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;">
+            <sc-for list="{{lensOptions}}" as="opt" hint-placeholder-count="12">
+              <div onClick="{{opt.onClick}}" style="{{opt.cardStyle}}">
+                <div style="font-weight:600;font-size:13px;">{{opt.label}}</div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;padding-top:4px;">
+            <sc-for list="{{lensTabRows}}" as="t2" hint-placeholder-count="3">
+              <div style="padding:8px 14px;border-radius:999px;background:oklch(93% 0.05 165);font-size:12.5px;color:oklch(30% 0.08 165);">{{t2.label}}: {{t2.value}}</div>
+            </sc-for>
+          </div>
+          <label style="display:flex;flex-direction:column;gap:8px;">
+            <span style="font-size:13.5px;font-weight:600;color:oklch(40% 0.02 280);">Anything to add? <span style="font-weight:400;color:oklch(58% 0.015 90);">(optional)</span></span>
+            <textarea value="{{lensNote}}" onChange="{{onLensNote}}" placeholder="Write a few words..." rows="2" style="{{textareaStyle}}"></textarea>
+          </label>
+        </sc-if>
+
+        <sc-if value="{{isStep4}}" hint-placeholder-val="{{false}}">
+          <div style="font-family:'Quicksand',sans-serif;font-weight:700;font-size:23px;">What approach did you take?</div>
+          <div style="font-size:14.5px;color:oklch(45% 0.02 280);margin-top:-10px;">Choose the one that fits best, or add your own.</div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;">
+            <sc-for list="{{approachOptions}}" as="opt" hint-placeholder-count="4">
+              <div onClick="{{opt.onClick}}" style="{{opt.rowStyle}}">
+                <div style="font-weight:600;font-size:15.5px;">{{opt.label}}</div>
+                <div style="font-size:13px;color:oklch(50% 0.02 280);margin-top:3px;">{{opt.desc}}</div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="{{addRowStyle}}">
+            <input value="{{customDraftApproach}}" onChange="{{onCustomChangeApproach}}" placeholder="Add your own approach..." style="{{addInputStyle}}">
+            <button onClick="{{onCustomAddApproach}}" style="{{addButtonStyle}}">Add</button>
+          </div>
+          <label style="display:flex;flex-direction:column;gap:8px;">
+            <span style="font-size:13.5px;font-weight:600;color:oklch(40% 0.02 280);">Why does this approach fit? <span style="font-weight:400;color:oklch(58% 0.015 90);">(optional)</span></span>
+            <textarea value="{{approachNote}}" onChange="{{onApproachNote}}" placeholder="A few words..." rows="2" style="{{textareaStyle}}"></textarea>
+          </label>
+        </sc-if>
+
+        <sc-if value="{{isStep5}}" hint-placeholder-val="{{false}}">
+          <div style="font-family:'Quicksand',sans-serif;font-weight:700;font-size:23px;">How did you handle it?</div>
+          <div style="font-size:14.5px;color:oklch(45% 0.02 280);margin-top:-10px;">Pick the care practices you used.</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <sc-for list="{{handlingOptions}}" as="opt" hint-placeholder-count="5">
+              <div onClick="{{opt.onClick}}" style="{{opt.style}}">{{opt.label}}</div>
+            </sc-for>
+          </div>
+          <div style="font-size:13.5px;font-weight:600;color:oklch(40% 0.02 280);margin-top:4px;">Did this way of handling it work well?</div>
+          <div style="display:flex;gap:8px;">
+            <sc-for list="{{handlingWorkedOptions}}" as="opt" hint-placeholder-count="3">
+              <div onClick="{{opt.onClick}}" style="{{opt.style}}">{{opt.label}}</div>
+            </sc-for>
+          </div>
+          <div style="font-size:13.5px;font-weight:600;color:oklch(40% 0.02 280);margin-top:4px;">What helped?</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <sc-for list="{{helpedOptions}}" as="opt" hint-placeholder-count="6">
+              <div onClick="{{opt.onClick}}" style="{{opt.style}}">{{opt.label}}</div>
+            </sc-for>
+          </div>
+          <div style="font-size:13.5px;font-weight:600;color:oklch(40% 0.02 280);margin-top:4px;">What was missing?</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <sc-for list="{{missingOptions}}" as="opt" hint-placeholder-count="5">
+              <div onClick="{{opt.onClick}}" style="{{opt.style}}">{{opt.label}}</div>
+            </sc-for>
+          </div>
+          <label style="display:flex;flex-direction:column;gap:8px;">
+            <span style="font-size:13.5px;font-weight:600;color:oklch(40% 0.02 280);">Anything else? <span style="font-weight:400;color:oklch(58% 0.015 90);">(optional)</span></span>
+            <textarea value="{{handlingNote}}" onChange="{{onHandlingNote}}" placeholder="A few words..." rows="2" style="{{textareaStyle}}"></textarea>
+          </label>
+        </sc-if>
+
+        <sc-if value="{{isStep6}}" hint-placeholder-val="{{false}}">
+          <div style="font-family:'Quicksand',sans-serif;font-weight:700;font-size:23px;">What might help next time?</div>
+          <div style="font-size:14.5px;color:oklch(45% 0.02 280);margin-top:-10px;">Choose care moves you may return to.</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <sc-for list="{{nextPracticeOptions}}" as="opt" hint-placeholder-count="5">
+              <div onClick="{{opt.onClick}}" style="{{opt.style}}">{{opt.label}}</div>
+            </sc-for>
+          </div>
+          <div style="font-size:13.5px;font-weight:600;color:oklch(40% 0.02 280);margin-top:4px;">What would help — from yourself</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <sc-for list="{{fromSelfOptions}}" as="opt" hint-placeholder-count="4">
+              <div onClick="{{opt.onClick}}" style="{{opt.style}}">{{opt.label}}</div>
+            </sc-for>
+          </div>
+          <div style="font-size:13.5px;font-weight:600;color:oklch(40% 0.02 280);margin-top:4px;">From supporters</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <sc-for list="{{fromSupportersOptions}}" as="opt" hint-placeholder-count="4">
+              <div onClick="{{opt.onClick}}" style="{{opt.style}}">{{opt.label}}</div>
+            </sc-for>
+          </div>
+          <div style="font-size:13.5px;font-weight:600;color:oklch(40% 0.02 280);margin-top:4px;">From systems / society</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <sc-for list="{{fromSystemsOptions}}" as="opt" hint-placeholder-count="4">
+              <div onClick="{{opt.onClick}}" style="{{opt.style}}">{{opt.label}}</div>
+            </sc-for>
+          </div>
+          <label style="display:flex;flex-direction:column;gap:8px;">
+            <span style="font-size:13.5px;font-weight:600;color:oklch(40% 0.02 280);">Anything else? <span style="font-weight:400;color:oklch(58% 0.015 90);">(optional)</span></span>
+            <textarea value="{{nextNote}}" onChange="{{onNextNote}}" placeholder="A few words..." rows="2" style="{{textareaStyle}}"></textarea>
+          </label>
+        </sc-if>
+
+      </div>
+      <div style="padding:14px 0 26px;display:flex;gap:10px;align-items:center;border-top:1px solid oklch(90% 0.01 90);background:oklch(97.5% 0.008 90);">
+        <button onClick="{{stepBack}}" style="border:none;background:none;cursor:pointer;color:oklch(45% 0.02 280);font-size:14.5px;padding:10px;">Back</button>
+        <div style="flex:1;"></div>
+        <button onClick="{{stepPrimary}}" style="{{stepPrimaryStyle}}">{{stepPrimaryLabel}}</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- COMPLETE / SNAPSHOT -->
+  <sc-if value="{{isComplete}}" hint-placeholder-val="{{false}}">
+    <div key="complete" style="animation:bwFade .45s ease both;display:flex;flex-direction:column;flex:1;">
+      <div style="padding:20px 0 4px;display:flex;align-items:center;gap:12px;">
+        <button onClick="{{goOverview}}" style="border:none;background:none;cursor:pointer;font-size:20px;color:oklch(40% 0.02 280);padding:6px;">←</button>
+        <div style="font-family:'Quicksand',sans-serif;font-weight:600;font-size:15px;color:oklch(45% 0.02 280);">Your Episode Snapshot</div>
+      </div>
+      <div style="padding:14px 0 32px;display:flex;flex-direction:column;gap:20px;flex:1;">
+        <div style="background:oklch(99% 0.004 90);border-radius:22px;padding:22px;box-shadow:0 8px 24px oklch(50% 0.02 280 / 0.08);display:flex;flex-direction:column;gap:14px;">
+          <div>
+            <div style="font-family:'Quicksand',sans-serif;font-weight:700;font-size:20px;">{{draftTitleDisplay}}</div>
+            <div style="font-size:13px;color:oklch(55% 0.015 90);margin-top:2px;">{{draftDateDisplay}}</div>
+          </div>
+          <div style="display:flex;gap:8px;justify-content:center;padding:6px 0;">
+            <sc-for list="{{storyNodesHero}}" as="node" hint-placeholder-count="6">
+              <div style="{{node.styleHero}}"></div>
+            </sc-for>
+          </div>
+          <div style="font-size:15px;line-height:1.6;color:oklch(32% 0.02 280);">{{storyText}}</div>
+        </div>
+
+        <sc-if value="{{hasHighlights}}" hint-placeholder-val="{{false}}">
+          <div>
+            <div style="font-size:13.5px;font-weight:600;color:oklch(40% 0.02 280);margin-bottom:8px;">What mattered most</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <sc-for list="{{highlightTags}}" as="tag" hint-placeholder-count="3">
+                <div style="{{tag.style}}">{{tag.label}}</div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+
+        <div style="display:flex;flex-direction:column;gap:10px;margin-top:6px;">
+          <button onClick="{{saveJourney}}" style="{{primaryButtonStyle}}">Save to Past Journeys</button>
+          <button onClick="{{goShare}}" style="border:1.5px solid oklch(85% 0.02 90);cursor:pointer;padding:13px;border-radius:20px;background:transparent;color:oklch(30% 0.02 280);font-family:'Quicksand',sans-serif;font-weight:600;font-size:15px;max-width:360px;width:100%;align-self:center;">Share / Export</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- SHARE -->
+  <sc-if value="{{isShare}}" hint-placeholder-val="{{false}}">
+    <div key="share" style="animation:bwFade .4s ease both;display:flex;flex-direction:column;flex:1;">
+      <div style="padding:20px 0 4px;display:flex;align-items:center;gap:12px;">
+        <button onClick="{{goComplete}}" style="border:none;background:none;cursor:pointer;font-size:20px;color:oklch(40% 0.02 280);padding:6px;">←</button>
+        <div style="font-family:'Quicksand',sans-serif;font-weight:600;font-size:15px;color:oklch(45% 0.02 280);">Choose what to share</div>
+      </div>
+      <div style="padding:14px 0 32px;display:flex;flex-direction:column;gap:18px;flex:1;">
+        <div style="font-size:13.5px;color:oklch(45% 0.02 280);background:oklch(93% 0.03 165);padding:12px 14px;border-radius:14px;">Only share what feels comfortable. You can hide any section.</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <sc-for list="{{shareSectionRows}}" as="row" hint-placeholder-count="5">
+            <div onClick="{{row.onClick}}" style="cursor:pointer;display:flex;align-items:center;gap:12px;background:oklch(99% 0.004 90);border-radius:14px;padding:13px 15px;">
+              <div style="{{row.checkStyle}}"></div>
+              <div style="font-size:14.5px;font-weight:500;">{{row.label}}</div>
+            </div>
+          </sc-for>
+        </div>
+        <sc-if value="{{shareConfirmed}}" hint-placeholder-val="{{false}}">
+          <div style="background:oklch(93% 0.05 165);border-radius:16px;padding:16px;font-size:14px;color:oklch(30% 0.05 165);text-align:center;">This is a preview only — nothing has actually been sent anywhere.</div>
+        </sc-if>
+        <div style="margin-top:auto;display:flex;flex-direction:column;gap:10px;">
+          <button onClick="{{confirmShare}}" style="{{primaryButtonStyle}}">Confirm Share</button>
+          <button onClick="{{goComplete}}" style="border:none;background:none;cursor:pointer;color:oklch(50% 0.02 280);font-size:14px;padding:6px;">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- PAST JOURNEYS -->
+  <sc-if value="{{isPast}}" hint-placeholder-val="{{false}}">
+    <div key="past" style="animation:bwFade .4s ease both;display:flex;flex-direction:column;flex:1;">
+      <div style="padding:20px 0 4px;display:flex;align-items:center;gap:12px;">
+        <button onClick="{{goHome}}" style="border:none;background:none;cursor:pointer;font-size:20px;color:oklch(40% 0.02 280);padding:6px;">←</button>
+        <div style="font-family:'Quicksand',sans-serif;font-weight:700;font-size:20px;flex:1;">My Pain Episode Maps</div>
+      </div>
+      <div style="padding:14px 0 32px;display:flex;flex-direction:column;gap:18px;flex:1;">
+        <div style="display:flex;gap:6px;background:oklch(93% 0.008 90);border-radius:14px;padding:4px;">
+          <div onClick="{{setPastList}}" style="{{pastListTabStyle}}">List</div>
+          <div onClick="{{setPastConstellation}}" style="{{pastConstellationTabStyle}}">Constellation</div>
+        </div>
+
+        <sc-if value="{{pastViewIsList}}" hint-placeholder-val="{{true}}">
+          <sc-if value="{{hasPastJourneys}}" hint-placeholder-val="{{false}}">
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <sc-for list="{{pastRows}}" as="j" hint-placeholder-count="3">
+                <div style="background:oklch(99% 0.004 90);border-radius:18px;padding:15px 16px;box-shadow:0 3px 12px oklch(50% 0.02 280 / 0.05);">
+                  <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                    <div style="font-weight:600;font-size:15.5px;">{{j.title}}</div>
+                    <div style="{{j.badgeStyle}}">Complete</div>
+                  </div>
+                  <div style="font-size:12.5px;color:oklch(55% 0.015 90);margin-top:2px;">{{j.subtitle}}</div>
+                  <div style="display:flex;gap:6px;margin-top:10px;">
+                    <sc-for list="{{j.nodes}}" as="node" hint-placeholder-count="6">
+                      <div style="{{node.styleMini}}"></div>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+          <sc-if value="{{noPastJourneys}}" hint-placeholder-val="{{false}}">
+            <div style="text-align:center;padding:50px 20px;color:oklch(55% 0.015 90);font-size:14.5px;">Your saved journeys will appear here once you complete one.</div>
+          </sc-if>
+        </sc-if>
+
+        <sc-if value="{{pastViewIsConstellation}}" hint-placeholder-val="{{false}}">
+          <div style="position:relative;height:340px;background:oklch(28% 0.03 280);border-radius:24px;overflow:hidden;">
+            <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:64px;height:64px;border-radius:50%;background:oklch(72% 0.09 280);display:flex;align-items:center;justify-content:center;color:white;font-family:'Quicksand',sans-serif;font-weight:600;font-size:11px;text-align:center;box-shadow:0 0 30px oklch(72% 0.09 280 / 0.6);z-index:2;">My maps</div>
+            <sc-for list="{{constellationNodes}}" as="star" hint-placeholder-count="4">
+              <div style="{{star.style}}">{{star.label}}</div>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <button onClick="{{startNewEpisode}}" style="{{primaryButtonStyleAuto}}">+ New Episode</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- INSIGHTS -->
+  <sc-if value="{{isInsights}}" hint-placeholder-val="{{false}}">
+    <div key="insights" style="animation:bwFade .4s ease both;display:flex;flex-direction:column;flex:1;">
+      <div style="padding:20px 0 4px;display:flex;align-items:center;gap:12px;">
+        <button onClick="{{goHome}}" style="border:none;background:none;cursor:pointer;font-size:20px;color:oklch(40% 0.02 280);padding:6px;">←</button>
+        <div style="font-family:'Quicksand',sans-serif;font-weight:700;font-size:20px;">Something to reflect on</div>
+      </div>
+      <div style="padding:14px 0 32px;display:flex;flex-direction:column;gap:16px;flex:1;">
+        <div style="font-size:14px;color:oklch(45% 0.02 280);">A few gentle things noticed across your maps. Nothing here is measured — only noticed.</div>
+        <sc-if value="{{hasInsights}}" hint-placeholder-val="{{false}}">
+          <div style="display:flex;flex-direction:column;gap:12px;">
+            <sc-for list="{{insightCards}}" as="card" hint-placeholder-count="3">
+              <div style="{{card.style}}">
+                <div style="font-size:12.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;opacity:0.75;">{{card.eyebrow}}</div>
+                <div style="font-size:15px;font-weight:600;margin-top:6px;">{{card.body}}</div>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+        <sc-if value="{{noInsights}}" hint-placeholder-val="{{true}}">
+          <div style="text-align:center;padding:60px 20px;color:oklch(55% 0.015 90);font-size:14.5px;">Complete a couple of episodes and gentle patterns will start to appear here.</div>
+        </sc-if>
+        <button onClick="{{startNewEpisode}}" style="{{primaryButtonStyleAuto}}">Start New Episode</button>
+      </div>
+    </div>
+  </sc-if>
+
+  </div>
+
+  <sc-if value="{{toast}}" hint-placeholder-val="{{false}}">
+    <div style="position:fixed;bottom:26px;left:50%;transform:translateX(-50%);background:oklch(28% 0.02 280);color:white;padding:12px 20px;border-radius:14px;font-size:14px;box-shadow:0 8px 24px rgba(0,0,0,0.25);z-index:50;animation:bwFade .3s ease both;">{{toast}}</div>
+  </sc-if>
+
+</div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;accentColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#7C5CD6&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;#7C5CD6&quot;,&quot;#5B8DBF&quot;,&quot;#4E9E8C&quot;,&quot;#C98A4B&quot;],&quot;section&quot;:&quot;Appearance&quot;},&quot;layoutWidth&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;cozy&quot;,&quot;spacious&quot;],&quot;default&quot;:&quot;spacious&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Appearance&quot;},&quot;showQuickNav&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Navigation&quot;}}">
+/*
+
+const STEP_META = [
+  {key:'pain', label:'Pain Experience', hue:280, shape:'circle', subtitle:'Tap to begin'},
+  {key:'place', label:'Place & People', hue:230, shape:'square', subtitle:'Where and who'},
+  {key:'lens', label:'Through Metaphors', hue:165, shape:'diamond', subtitle:'How you saw it'},
+  {key:'approach', label:'My Approach', hue:140, shape:'triangle', subtitle:'How you responded'},
+  {key:'handled', label:'How I Handled It', hue:70, shape:'circle', subtitle:'What you practiced'},
+  {key:'next', label:'Next Care Move', hue:30, shape:'square', subtitle:'What might help'},
+];
+
+const METAPHORS = [
+  {key:'shadow', label:'Shadow', desc:'It felt like something always there, following me around.'},
+  {key:'storm', label:'Storm', desc:'It felt unpredictable and intense, coming in waves.'},
+  {key:'cage', label:'Cage', desc:'It felt like being restricted, my freedom limited.'},
+  {key:'companion', label:'Companion', desc:'It felt like a constant presence, part of daily life.'},
+  {key:'battle', label:'Battle', desc:'It felt like fighting something strong.'},
+  {key:'weight', label:'Heavy Weight', desc:'It felt heavy weight, dragging me down.'},
+  {key:'fog', label:'Fog', desc:'It felt cloudy, dulling my thinking/awareness.'},
+  {key:'fire', label:'Fire', desc:'It felt burning and sharp.'},
+  {key:'thief', label:'Thief', desc:'It felt like something stealing joys and shrinking life.'},
+  {key:'teacher', label:'Teacher', desc:'It felt like something guiding me to my limits and strengths.'},
+  {key:'signal', label:'Signal', desc:'It felt like a cue helping me understand my body\u2019s needs.'},
+];
+const PLACES = ['Home','Work','Public space','Clinic','Traveling'];
+const PEOPLE = ['Alone','Partner','Family / loved ones','Friends','Coworkers'];
+const LENS_METAPHORS = ['Shadowed Self','Warrior','Actor','Invisible','Survivor','Fragile','Burden','Traveler','Squeaky Wheel','Shield','Companion','Leaky Boat','Guide','Scientist','Phoenix','Lighthouse','Architect','Anchor','Angel','Open Ear','Rock','Cheerleader','Mirror'].map(label=>({key:label.toLowerCase().replace(/\s+/g,''), label}));
+const LENS_TABS = [
+  {key:'selfLens', label:'Myself', prompt:'How did you see yourself?'},
+  {key:'supportersLens', label:'Supporters', prompt:'How did you see your supporter/s?'},
+  {key:'societyLens', label:'Others', prompt:'How did others see you?'},
+];
+const APPROACHES = [
+  {key:'holding', label:'Holding It Together', desc:'Keeping things running'},
+  {key:'managing', label:'Managing the Load', desc:'Pacing and adjusting'},
+  {key:'stepping', label:'Fighting to Be Seen', desc:'Pushing to be noticed and heard'},
+  {key:'pushing', label:'Finding Bearings', desc:'Reorienting yourself and adapting'},
+];
+const HANDLING = ['Reflecting','Expressing','Resting','Being mindful','Distracting myself'];
+const WORKED = ['Yes','No','Not sure'];
+const HELPED = ['Rest','Heat pack','Partner support','Quiet time','Breathing','Movement'];
+const MISSING = ['More flexibility','Less noise','More support','Privacy','Time'];
+const NEXT_PRACTICES = ['Rest','Being mindful','Gentle movement','Talking to someone','Adjusting plans'];
+const FROM_SELF = ['Patience','Rest','Permission to pause'];
+const FROM_SUPPORTERS = ['Check-in','Understanding','Help with tasks'];
+const FROM_SYSTEMS = ['Flexibility at work','Transportation','Medical support','Quiet space'];
+
+function blankDraft(){
+  return {
+    title:'', timeOfDay:'', context:'',
+    painMetaphor:null, painNote:'',
+    places:[], people:[], placeNote:'',
+    customPlaces:[], customPeople:[],
+    selfLens:null, supportersLens:null, societyLens:null, lensNote:'',
+    approach:null, approachNote:'',
+    handlingPractices:[], handlingWorked:null, handlingHelped:[], handlingMissing:[], handlingNote:'',
+    nextPractices:[], nextFromSelf:[], nextFromSupporters:[], nextFromSystems:[], nextNote:'',
+    custom:{ metaphor:[], approach:[] },
+    createdAt: Date.now(),
+  };
+}
+
+function shapeStyle(shape, size){
+  if(shape==='circle') return `border-radius:50%;width:${size}px;height:${size}px;`;
+  if(shape==='square') return `border-radius:${Math.max(4,size*0.22)}px;width:${size}px;height:${size}px;`;
+  if(shape==='diamond') return `border-radius:${Math.max(3,size*0.14)}px;width:${size}px;height:${size}px;transform:rotate(45deg);`;
+  if(shape==='triangle') return `width:0;height:0;border-left:${size/2}px solid transparent;border-right:${size/2}px solid transparent;border-bottom:${size*0.86}px solid TRIANGLECOLOR;`;
+  return `width:${size}px;height:${size}px;`;
+}
+
+class Component extends DCLogic {
+  state = {
+    screen:'home',
+    draft: null,
+    pastJourneys: [],
+    pastView:'list',
+    activeStep: 1,
+    customDrafts: { metaphor:'', approach:'', place:'', person:'' },
+    hoveredOption: null,
+    lensTab: 'selfLens',
+    shareSections: { pain:true, place:true, lens:true, approach:true, handled:true, next:true },
+    shareConfirmed:false,
+    toast:'',
+    navOpen:false,
+  };
+
+  toggleNav=()=>this.setState(s=>({navOpen:!s.navOpen}));
+  closeNav=()=>this.setState({navOpen:false});
+  navTo(screen){ this.closeNav(); this.go(screen); }
+  navStartNew=()=>{ this.closeNav(); this.startNewEpisode(); };
+
+  componentDidMount(){
+    try{
+      const rawDraft = localStorage.getItem('bw_draft');
+      const rawPast = localStorage.getItem('bw_past');
+      this.setState({
+        draft: rawDraft ? JSON.parse(rawDraft) : null,
+        pastJourneys: rawPast ? JSON.parse(rawPast) : [],
+      });
+    }catch(e){}
+  }
+
+  componentDidUpdate(prevProps, prevState){
+    if(prevState.draft !== this.state.draft){
+      try{ this.state.draft ? localStorage.setItem('bw_draft', JSON.stringify(this.state.draft)) : localStorage.removeItem('bw_draft'); }catch(e){}
+    }
+    if(prevState.pastJourneys !== this.state.pastJourneys){
+      try{ localStorage.setItem('bw_past', JSON.stringify(this.state.pastJourneys)); }catch(e){}
+    }
+  }
+
+  flashToast(msg){
+    this.setState({toast:msg});
+    clearTimeout(this._toastTimer);
+    this._toastTimer = setTimeout(()=>this.setState({toast:''}), 1800);
+  }
+
+  go(screen){ this.setState({screen}); }
+  goHome=()=>this.go('home');
+  goPast=()=>this.go('past');
+  goInsights=()=>this.go('insights');
+  goOverview=()=>this.go('overview');
+  goComplete=()=>this.go('complete');
+  goShare=()=>this.go('share');
+
+  startNewEpisode=()=>{ this.setState({draft: blankDraft(), screen:'setup'}); };
+  resumeDraft=()=>{ this.go(this.state.draft && this.state.draft.completedAt ? 'overview' : 'overview'); };
+
+  updateDraft(patch){ this.setState(s=>({draft:{...s.draft, ...patch}})); }
+
+  onSetupTitle=(e)=>this.updateDraft({title:e.target.value});
+  onSetupContext=(e)=>this.updateDraft({context:e.target.value});
+  setTimeOfDay=(v)=>this.updateDraft({timeOfDay:v});
+  beginMap=()=>this.go('overview');
+
+  goStep=(n)=>{ this.setState({activeStep:n, screen:'step'+n}); };
+  continueFlow=()=>{
+    const d = this.state.draft;
+    const order = [
+      !!(d && d.painMetaphor), !!(d && (d.places.length||d.people.length)),
+      !!(d && (d.selfLens||d.supportersLens||d.societyLens)), !!(d && d.approach),
+      !!(d && d.handlingPractices.length), !!(d && d.nextPractices.length),
+    ];
+    const firstIncomplete = order.findIndex(x=>!x);
+    this.goStep(firstIncomplete===-1 ? 1 : firstIncomplete+1);
+  };
+
+  stepBack=()=>{
+    const n = this.state.activeStep;
+    if(n<=1) this.go('overview'); else this.goStep(n-1);
+  };
+  stepSkip=()=>{
+    const n = this.state.activeStep;
+    if(n>=6) this.go('complete'); else this.goStep(n+1);
+  };
+  stepPrimary=()=>{
+    const n = this.state.activeStep;
+    if(n>=6) this.go('complete'); else this.goStep(n+1);
+  };
+
+  toggleSingle(field, value){ this.updateDraft({[field]: this.state.draft[field]===value ? null : value}); }
+  toggleMulti(field, value){
+    const arr = this.state.draft[field];
+    const next = arr.includes(value) ? arr.filter(x=>x!==value) : [...arr, value];
+    this.updateDraft({[field]: next});
+  }
+
+  onPainNote=(e)=>this.updateDraft({painNote:e.target.value});
+  onPlaceNote=(e)=>this.updateDraft({placeNote:e.target.value});
+  onLensNote=(e)=>this.updateDraft({lensNote:e.target.value});
+  onApproachNote=(e)=>this.updateDraft({approachNote:e.target.value});
+  onHandlingNote=(e)=>this.updateDraft({handlingNote:e.target.value});
+  onNextNote=(e)=>this.updateDraft({nextNote:e.target.value});
+
+  onCustomChangeMetaphor=(e)=>this.setState(s=>({customDrafts:{...s.customDrafts, metaphor:e.target.value}}));
+  onCustomAddMetaphor=()=>{
+    const v = this.state.customDrafts.metaphor.trim();
+    if(!v) return;
+    const d = this.state.draft;
+    this.updateDraft({ custom:{...d.custom, metaphor:[...d.custom.metaphor, {key:'c_'+Date.now(), label:v, desc:'Your own words'}]}, painMetaphor:v });
+    this.setState(s=>({customDrafts:{...s.customDrafts, metaphor:''}}));
+  };
+  onCustomChangePlace=(e)=>this.setState(s=>({customDrafts:{...s.customDrafts, place:e.target.value}}));
+  onCustomAddPlace=()=>{
+    const v = this.state.customDrafts.place.trim();
+    if(!v) return;
+    const d = this.state.draft;
+    this.updateDraft({ customPlaces:[...(d.customPlaces||[]), v], places:[...d.places, v] });
+    this.setState(s=>({customDrafts:{...s.customDrafts, place:''}}));
+  };
+  onCustomChangePerson=(e)=>this.setState(s=>({customDrafts:{...s.customDrafts, person:e.target.value}}));
+  onCustomAddPerson=()=>{
+    const v = this.state.customDrafts.person.trim();
+    if(!v) return;
+    const d = this.state.draft;
+    this.updateDraft({ customPeople:[...(d.customPeople||[]), v], people:[...d.people, v] });
+    this.setState(s=>({customDrafts:{...s.customDrafts, person:''}}));
+  };
+  onCustomChangeApproach=(e)=>this.setState(s=>({customDrafts:{...s.customDrafts, approach:e.target.value}}));
+  onCustomAddApproach=()=>{
+    const v = this.state.customDrafts.approach.trim();
+    if(!v) return;
+    const d = this.state.draft;
+    this.updateDraft({ custom:{...d.custom, approach:[...d.custom.approach, {key:'c_'+Date.now(), label:v, desc:'Your own words'}]}, approach:v });
+    this.setState(s=>({customDrafts:{...s.customDrafts, approach:''}}));
+  };
+
+  saveJourney=()=>{
+    const d = this.state.draft;
+    const saved = {...d, id:'j_'+Date.now(), savedAt: Date.now()};
+    this.setState(s=>({ pastJourneys:[saved, ...s.pastJourneys], draft:null, screen:'home' }));
+    this.flashToast('Saved to your journeys');
+  };
+
+  setLensTab=(key)=>this.setState({lensTab:key});
+
+  setPastList=()=>this.setState({pastView:'list'});
+  setPastConstellation=()=>this.setState({pastView:'constellation'});
+
+  toggleShareSection=(key)=>this.setState(s=>({shareSections:{...s.shareSections, [key]:!s.shareSections[key]}}));
+  confirmShare=()=>{ this.setState({shareConfirmed:true}); this.flashToast('Preview ready — nothing was sent'); };
+
+  setHovered=(key)=>this.setState({hoveredOption:key});
+  clearHovered=(key)=>this.setState(s=>s.hoveredOption===key?{hoveredOption:null}:null);
+
+  buildOptionCard(list, selectedValue, field, hue){
+    return list.map(item=>{
+      const key = item.key || item;
+      const label = item.label || item;
+      const desc = item.desc || '';
+      const selected = selectedValue === (item.label || item);
+      const isHovered = this.state.hoveredOption === key;
+      return {
+        key, label, desc,
+        onClick: ()=>this.toggleSingle(field, item.label || item),
+        onMouseEnter: ()=>this.setHovered(key),
+        onMouseLeave: ()=>this.clearHovered(key),
+        cardStyle: `cursor:pointer;padding:14px;border-radius:16px;background:${selected?`oklch(93% 0.06 ${hue})`:'oklch(99% 0.004 90)'};border:1.5px solid ${selected?`oklch(62% 0.11 ${hue})`:'oklch(90% 0.012 90)'};transition:background .15s ease,border-color .15s ease;position:relative;height:112px;overflow:hidden;`,
+        dotStyle: `width:16px;height:16px;border-radius:5px;background:oklch(70% 0.11 ${hue});`,
+        rowStyle: `cursor:pointer;padding:14px 16px;border-radius:16px;background:${selected?`oklch(93% 0.06 ${hue})`:'oklch(99% 0.004 90)'};border:1.5px solid ${selected?`oklch(62% 0.11 ${hue})`:'oklch(90% 0.012 90)'};`,
+        descStyle: isHovered
+          ? `font-size:12.5px;color:oklch(50% 0.02 280);margin-top:6px;opacity:1;transition:opacity .18s ease;`
+          : `font-size:12.5px;color:oklch(50% 0.02 280);margin-top:6px;opacity:0;transition:opacity .18s ease;`,
+      };
+    });
+  }
+
+  buildChipList(list, selected, field, hue, multi){
+    const isSel = (label)=> multi ? selected.includes(label) : selected===label;
+    return list.map(label=>({
+      key: label,
+      label,
+      onClick: ()=> multi ? this.toggleMulti(field, label) : this.toggleSingle(field, label),
+      style: `cursor:pointer;padding:10px 16px;border-radius:999px;font-size:14px;font-weight:500;background:${isSel(label)?`oklch(62% 0.11 ${hue})`:'oklch(99% 0.004 90)'};color:${isSel(label)?'white':'oklch(32% 0.02 280)'};border:1.5px solid ${isSel(label)?`oklch(62% 0.11 ${hue})`:'oklch(88% 0.012 90)'};`,
+    }));
+  }
+
+  makeStoryNodes(size, ringHue){
+    const d = this.state.draft || blankDraft();
+    const filled = [
+      !!d.painMetaphor, !!(d.places.length||d.people.length),
+      !!(d.selfLens||d.supportersLens||d.societyLens), !!d.approach,
+      !!d.handlingPractices.length, !!d.nextPractices.length,
+    ];
+    return STEP_META.map((m,i)=>{
+      const isFilled = filled[i];
+      const isCurrent = ringHue!=null && this.state.activeStep===i+1;
+      let base = shapeStyle(m.shape, size);
+      const color = isFilled ? `oklch(68% 0.12 ${m.hue})` : (isCurrent ? `oklch(96% 0.02 ${m.hue})` : 'oklch(93% 0.01 90)');
+      const border = isCurrent ? `2.5px solid oklch(55% 0.13 ${m.hue})` : (isFilled ? 'none' : `2px dashed oklch(82% 0.015 90)`);
+      if(m.shape==='triangle'){
+        base = base.replace('TRIANGLECOLOR', color);
+        base += `background:transparent;filter:${isCurrent?`drop-shadow(0 0 0 2px oklch(55% 0.13 ${m.hue}))`:'none'};`;
+      } else {
+        base += `background:${color};border:${border};box-shadow:${isFilled?`0 3px 10px oklch(68% 0.12 ${m.hue} / 0.4)`:'none'};`;
+      }
+      return { key:m.key, filled:isFilled, styleMini: shapeStyle(m.shape,10)+`background:${isFilled?`oklch(68% 0.12 ${m.hue})`:'oklch(88% 0.012 90)'};${m.shape==='triangle'?'':''}`, styleHeader: base, styleHero: shapeStyle(m.shape,size).replace('TRIANGLECOLOR',color)+(m.shape!=='triangle'?`background:${color};border:${border};box-shadow:${isFilled?`0 4px 14px oklch(68% 0.12 ${m.hue} / 0.4)`:'none'};`:'') };
+    });
+  }
+
+  renderVals(){
+    const s = this.state;
+    const d = s.draft || blankDraft();
+    const screen = s.screen;
+    const isStepScreen = /^step[1-6]$/.test(screen);
+    const stepNumber = isStepScreen ? parseInt(screen.replace('step','')) : s.activeStep;
+    const stepMeta = STEP_META[stepNumber-1] || STEP_META[0];
+
+    const timeOfDayOptions = ['Morning','Afternoon','Evening','Night'].map(t=>({
+      key:t, label:t, onClick:()=>this.setTimeOfDay(t),
+      style:`cursor:pointer;padding:10px 16px;border-radius:999px;font-size:14px;font-weight:500;background:${d.timeOfDay===t?'oklch(62% 0.11 280)':'oklch(99% 0.004 90)'};color:${d.timeOfDay===t?'white':'oklch(32% 0.02 280)'};border:1.5px solid ${d.timeOfDay===t?'oklch(62% 0.11 280)':'oklch(88% 0.012 90)'};`
+    }));
+
+    const metaphorOptions = this.buildOptionCard([...METAPHORS, ...d.custom.metaphor], d.painMetaphor, 'painMetaphor', 280);
+    const placeOptions = this.buildChipList([...PLACES, ...(d.customPlaces||[])], d.places, 'places', 230, true);
+    const peopleOptions = this.buildChipList([...PEOPLE, ...(d.customPeople||[])], d.people, 'people', 230, true);
+    const activeLensField = s.lensTab;
+    const lensOptions = this.buildOptionCard(LENS_METAPHORS, d[activeLensField], activeLensField, 165).map(o=>({
+      ...o, cardStyle: o.cardStyle.replace('height:112px;','height:64px;display:flex;align-items:center;justify-content:center;text-align:center;padding:8px;'),
+    }));
+    const lensTabRows = LENS_TABS.map(t=>({
+      key:t.key, label:t.label, value: d[t.key] || 'Not chosen',
+      onClick: ()=>this.setLensTab(t.key),
+      style: `cursor:pointer;flex:1;text-align:center;padding:11px 8px;border-radius:13px;font-size:13.5px;font-weight:600;background:${activeLensField===t.key?'white':'transparent'};box-shadow:${activeLensField===t.key?'0 2px 8px rgba(0,0,0,0.08)':'none'};color:${d[t.key]?'oklch(30% 0.02 280)':'oklch(55% 0.015 90)'};`,
+    }));
+    const lensPrompt = (LENS_TABS.find(t=>t.key===activeLensField)||LENS_TABS[0]).prompt;
+    const approachOptions = this.buildOptionCard([...APPROACHES, ...d.custom.approach], d.approach, 'approach', 140);
+    const handlingOptions = this.buildChipList(HANDLING, d.handlingPractices, 'handlingPractices', 70, true);
+    const handlingWorkedOptions = this.buildChipList(WORKED, d.handlingWorked, 'handlingWorked', 70, false);
+    const helpedOptions = this.buildChipList(HELPED, d.handlingHelped, 'handlingHelped', 70, true);
+    const missingOptions = this.buildChipList(MISSING, d.handlingMissing, 'handlingMissing', 70, true);
+    const nextPracticeOptions = this.buildChipList(NEXT_PRACTICES, d.nextPractices, 'nextPractices', 30, true);
+    const fromSelfOptions = this.buildChipList(FROM_SELF, d.nextFromSelf, 'nextFromSelf', 30, true);
+    const fromSupportersOptions = this.buildChipList(FROM_SUPPORTERS, d.nextFromSupporters, 'nextFromSupporters', 30, true);
+    const fromSystemsOptions = this.buildChipList(FROM_SYSTEMS, d.nextFromSystems, 'nextFromSystems', 30, true);
+
+    const storyNodesMini = this.makeStoryNodes(10, null);
+    const storyNodesHeader = this.makeStoryNodes(30, true);
+    const storyNodesHero = this.makeStoryNodes(46, null);
+
+    const stepRows = STEP_META.map((m,i)=>{
+      const n = i+1;
+      const filled = storyNodesHeader[i].filled;
+      return {
+        key:m.key, label:m.label, subtitle: filled? 'Done — tap to edit' : m.subtitle,
+        onClick:()=>this.goStep(n),
+        trailing: filled ? '✓' : '›',
+        iconStyle: shapeStyle(m.shape,30).replace('TRIANGLECOLOR',`oklch(68% 0.12 ${m.hue})`)+(m.shape!=='triangle'?`background:${filled?`oklch(68% 0.12 ${m.hue})`:'oklch(93% 0.01 90)'};`:''),
+      };
+    });
+
+    const addRowStyle = 'display:flex;gap:8px;';
+    const addInputStyle = 'flex:1;border:1.5px solid oklch(88% 0.015 90);border-radius:12px;padding:11px 14px;font-size:14px;background:oklch(99% 0.004 90);outline:none;';
+    const addButtonStyle = 'border:none;cursor:pointer;padding:11px 18px;border-radius:12px;background:oklch(88% 0.02 90);color:oklch(30% 0.02 280);font-weight:600;font-size:14px;';
+    const textareaStyle = 'border:1.5px solid oklch(88% 0.015 90);border-radius:14px;padding:14px 16px;font-size:14.5px;background:oklch(99% 0.004 90);outline:none;resize:none;font-family:Karla,sans-serif;';
+
+    const clauses = [];
+    if(d.painMetaphor) clauses.push(`This episode felt like a ${d.painMetaphor.toLowerCase()}.`);
+    if(d.painNote) clauses.push(d.painNote);
+    if(d.places.length || d.people.length) clauses.push(`It happened${d.places.length?' at '+d.places.join(' & ').toLowerCase():''}${d.people.length?', with '+d.people.join(', ').toLowerCase()+' around':', while alone'}.`);
+    if(d.selfLens||d.supportersLens||d.societyLens) clauses.push(`I saw myself as ${(d.selfLens||'uncertain').toLowerCase()}${d.supportersLens?`, my supporters as ${d.supportersLens.toLowerCase()}`:''}${d.societyLens?`, and the world felt ${d.societyLens.toLowerCase()}`:''}.`);
+    if(d.approach) clauses.push(`My approach was ${d.approach.toLowerCase()}.`);
+    if(d.handlingPractices.length) clauses.push(`I handled it by ${d.handlingPractices.join(', ').toLowerCase()}.`);
+    if(d.handlingHelped.length) clauses.push(`${d.handlingHelped.join(', ')} helped most.`);
+    if(d.nextPractices.length) clauses.push(`Next time, I hope to lean on ${d.nextPractices.join(', ').toLowerCase()}.`);
+    const storyText = clauses.length ? clauses.join(' ') : 'This episode is still taking shape — every piece you add fills in more of the story.';
+
+    const highlightTags = [];
+    [...d.handlingHelped, ...d.nextFromSelf, ...d.nextFromSupporters].slice(0,3).forEach((t,i)=>{
+      highlightTags.push({key:t+i, label:t, style:`padding:9px 14px;border-radius:999px;font-size:13px;font-weight:500;background:oklch(93% 0.05 ${[70,30,140][i%3]});color:oklch(32% 0.08 ${[70,30,140][i%3]});`});
+    });
+
+    const shareLabels = {pain:'Pain metaphor', place:'Place & people', lens:'Self & others', approach:'My approach', handled:'How I handled it', next:'Next care move'};
+    const shareSectionRows = Object.keys(shareLabels).map(k=>({
+      key:k, label:shareLabels[k], onClick:()=>this.toggleShareSection(k),
+      checkStyle:`width:20px;height:20px;border-radius:7px;background:${s.shareSections[k]?'oklch(62% 0.11 280)':'oklch(96% 0.008 90)'};border:1.5px solid ${s.shareSections[k]?'oklch(62% 0.11 280)':'oklch(85% 0.015 90)'};`
+    }));
+
+    const pastRows = s.pastJourneys.map(j=>({
+      key:j.id, title:j.title||'Untitled episode',
+      subtitle:new Date(j.savedAt).toLocaleDateString(undefined,{month:'short',day:'numeric'})+(j.painMetaphor?' · '+j.painMetaphor:''),
+      badgeStyle:'font-size:11px;font-weight:700;padding:4px 10px;border-radius:999px;background:oklch(90% 0.06 165);color:oklch(30% 0.08 165);white-space:nowrap;',
+      nodes: STEP_META.map((m,i)=>{
+        const filled = [!!j.painMetaphor, !!(j.places&&j.places.length||j.people&&j.people.length), !!(j.selfLens||j.supportersLens||j.societyLens), !!j.approach, !!(j.handlingPractices&&j.handlingPractices.length), !!(j.nextPractices&&j.nextPractices.length)][i];
+        return {key:m.key, styleMini:shapeStyle(m.shape,10)+`background:${filled?`oklch(68% 0.12 ${m.hue})`:'oklch(88% 0.012 90)'};`};
+      })
+    }));
+
+    const constellationNodes = s.pastJourneys.slice(0,6).map((j,i)=>{
+      const angle = (i/(Math.max(s.pastJourneys.length,1)))*2*Math.PI;
+      const r = 110;
+      const x = 50 + Math.cos(angle)*30, y = 50 + Math.sin(angle)*38;
+      return {key:j.id, label:(j.painMetaphor||'Episode'), style:`position:absolute;left:${x}%;top:${y}%;transform:translate(-50%,-50%);width:48px;height:48px;border-radius:50%;background:oklch(60% 0.1 ${200+i*30});color:white;display:flex;align-items:center;justify-content:center;font-size:10px;text-align:center;font-family:Quicksand,sans-serif;font-weight:600;box-shadow:0 0 16px oklch(60% 0.1 ${200+i*30} / 0.5);`};
+    });
+
+    let insightCards = [];
+    if(s.pastJourneys.length>=2){
+      const metaphors = s.pastJourneys.map(j=>j.painMetaphor).filter(Boolean);
+      const freq = {}; metaphors.forEach(m=>freq[m]=(freq[m]||0)+1);
+      const top = Object.keys(freq).sort((a,b)=>freq[b]-freq[a])[0];
+      if(top && freq[top]>1) insightCards.push({key:'m', eyebrow:'A recurring metaphor', body:`"${top}" has shown up in ${freq[top]} of your maps.`, style:'padding:16px;border-radius:18px;background:oklch(93% 0.05 280);color:oklch(30% 0.08 280);'});
+      const missing = s.pastJourneys.flatMap(j=>j.handlingMissing||[]);
+      const mfreq={}; missing.forEach(m=>mfreq[m]=(mfreq[m]||0)+1);
+      const topMissing = Object.keys(mfreq).sort((a,b)=>mfreq[b]-mfreq[a])[0];
+      if(topMissing) insightCards.push({key:'n', eyebrow:'Something you may need', body:`"${topMissing}" has come up more than once as something missing.`, style:'padding:16px;border-radius:18px;background:oklch(93% 0.05 30);color:oklch(30% 0.08 30);'});
+      const helped = s.pastJourneys.flatMap(j=>j.handlingHelped||[]);
+      const hfreq={}; helped.forEach(m=>hfreq[m]=(hfreq[m]||0)+1);
+      const topHelped = Object.keys(hfreq).sort((a,b)=>hfreq[b]-hfreq[a])[0];
+      if(topHelped) insightCards.push({key:'h', eyebrow:'What tends to help', body:`${topHelped} shows up often as something that helps.`, style:'padding:16px;border-radius:18px;background:oklch(93% 0.05 165);color:oklch(30% 0.08 165);'});
+    }
+
+    const hour = new Date().getHours();
+    const homeGreeting = hour<12 ? 'Good morning.' : hour<18 ? 'Good afternoon.' : 'Good evening.';
+
+    const accent = this.props.accentColor || '#7C5CD6';
+    const contentMaxWidth = this.props.layoutWidth === 'cozy' ? '640px' : '980px';
+    const showNav = this.props.showQuickNav !== false;
+    const primaryButtonStyle = `border:none;cursor:pointer;padding:16px;border-radius:20px;background:${accent};color:white;font-family:'Quicksand',sans-serif;font-weight:600;font-size:16.5px;box-shadow:0 10px 24px ${accent}55;max-width:360px;width:100%;align-self:center;`;
+    const primaryButtonStyleAuto = primaryButtonStyle + 'margin-top:auto;';
+    const navChevronStyle = `display:inline-block;transition:transform .2s ease;transform:rotate(${s.navOpen?180:0}deg);`;
+    const navItemStyle = 'cursor:pointer;padding:12px 14px;border-radius:10px;font-size:14.5px;font-weight:500;color:oklch(30% 0.02 280);';
+    const navMenuItems = [
+      {key:'home', label:'Home', onClick:()=>this.navTo('home')},
+      {key:'new', label:'New Episode', onClick:this.navStartNew},
+      ...(s.draft ? [{key:'resume', label:'Continue Draft', onClick:()=>this.navTo('overview')}] : []),
+      {key:'past', label:'Past Journeys', onClick:()=>this.navTo('past')},
+      {key:'insights', label:'Something to Reflect On', onClick:()=>this.navTo('insights')},
+    ].map(it=>({...it, style:navItemStyle}));
+
+    return {
+      accent, contentMaxWidth, showNav, primaryButtonStyle, primaryButtonStyleAuto,
+      navOpen: s.navOpen, toggleNav: this.toggleNav, navChevronStyle, navMenuItems,
+      screen, isHome: screen==='home', isSetup: screen==='setup', isOverview: screen==='overview',
+      isStepScreen, isStep1: stepNumber===1, isStep2: stepNumber===2, isStep3: stepNumber===3,
+      isStep4: stepNumber===4, isStep5: stepNumber===5, isStep6: stepNumber===6,
+      isComplete: screen==='complete', isShare: screen==='share', isPast: screen==='past', isInsights: screen==='insights',
+      stepNumber, stepLabel: stepMeta.label,
+      hasDraft: !!s.draft, draftTitleDisplay: d.title || 'Untitled episode',
+      draftDateDisplay: new Date(d.createdAt||Date.now()).toLocaleDateString(undefined,{month:'long', day:'numeric', year:'numeric'}) + (d.timeOfDay?' · '+d.timeOfDay:''),
+      homeGreeting,
+      startNewEpisode: this.startNewEpisode, resumeDraft: this.resumeDraft, goHome: this.goHome, goPast: this.goPast, goInsights: this.goInsights,
+      setupTitle: d.title, onSetupTitle: this.onSetupTitle, onSetupContext: this.onSetupContext, setupContext: d.context,
+      timeOfDayOptions, beginMap: this.beginMap,
+      storyNodesMini, storyNodesHeader, storyNodesHero,
+      stepRows, overviewCta: this.continueFlow ? (storyNodesHeader.some(n=>n.filled) ? 'Continue' : 'Begin Map') : 'Begin Map',
+      continueFlow: this.continueFlow,
+      metaphorOptions, addRowStyle, addInputStyle, addButtonStyle, textareaStyle,
+      customDraftMetaphor: s.customDrafts.metaphor, onCustomChangeMetaphor: this.onCustomChangeMetaphor, onCustomAddMetaphor: this.onCustomAddMetaphor,
+      painNote: d.painNote, onPainNote: this.onPainNote,
+      placeOptions, peopleOptions, placeNote: d.placeNote, onPlaceNote: this.onPlaceNote,
+      customDraftPlace: s.customDrafts.place, onCustomChangePlace: this.onCustomChangePlace, onCustomAddPlace: this.onCustomAddPlace,
+      customDraftPerson: s.customDrafts.person, onCustomChangePerson: this.onCustomChangePerson, onCustomAddPerson: this.onCustomAddPerson,
+      lensOptions, lensTabRows, lensPrompt, lensNote: d.lensNote, onLensNote: this.onLensNote,
+      approachOptions, customDraftApproach: s.customDrafts.approach, onCustomChangeApproach: this.onCustomChangeApproach, onCustomAddApproach: this.onCustomAddApproach,
+      approachNote: d.approachNote, onApproachNote: this.onApproachNote,
+      handlingOptions, handlingWorkedOptions, helpedOptions, missingOptions, handlingNote: d.handlingNote, onHandlingNote: this.onHandlingNote,
+      nextPracticeOptions, fromSelfOptions, fromSupportersOptions, fromSystemsOptions, nextNote: d.nextNote, onNextNote: this.onNextNote,
+      stepBack: this.stepBack, stepSkip: this.stepSkip, stepPrimary: this.stepPrimary,
+      stepPrimaryLabel: stepNumber>=6 ? 'Complete Map' : 'Next',
+      stepPrimaryStyle: `border:none;cursor:pointer;padding:14px 26px;border-radius:16px;background:${stepNumber>=6?'oklch(62% 0.1 30)':'oklch(62% 0.11 280)'};color:white;font-family:Quicksand,sans-serif;font-weight:600;font-size:15px;`,
+      goOverview: this.goOverview, goComplete: this.goComplete, goShare: this.goShare,
+      storyText, hasHighlights: highlightTags.length>0, highlightTags,
+      saveJourney: this.saveJourney,
+      shareSectionRows, shareConfirmed: s.shareConfirmed, confirmShare: this.confirmShare,
+      pastListTabStyle: `flex:1;text-align:center;padding:9px;border-radius:11px;cursor:pointer;font-size:13.5px;font-weight:600;background:${s.pastView==='list'?'white':'transparent'};box-shadow:${s.pastView==='list'?'0 2px 6px rgba(0,0,0,0.08)':'none'};`,
+      pastConstellationTabStyle: `flex:1;text-align:center;padding:9px;border-radius:11px;cursor:pointer;font-size:13.5px;font-weight:600;background:${s.pastView==='constellation'?'white':'transparent'};box-shadow:${s.pastView==='constellation'?'0 2px 6px rgba(0,0,0,0.08)':'none'};`,
+      setPastList: this.setPastList, setPastConstellation: this.setPastConstellation,
+      pastViewIsList: s.pastView==='list', pastViewIsConstellation: s.pastView==='constellation',
+      hasPastJourneys: s.pastJourneys.length>0, noPastJourneys: s.pastJourneys.length===0,
+      pastRows, constellationNodes,
+      hasInsights: insightCards.length>0, noInsights: insightCards.length===0, insightCards,
+      toast: s.toast,
+    };
+  }
+}
+
+*/
+const Component = window.BWApp.createComponent(DCLogic);
+</script>
+</body>
+</html>

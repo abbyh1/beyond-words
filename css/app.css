@@ -1,0 +1,32 @@
+:root {
+  color-scheme: light;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  background: oklch(96.5% 0.012 85);
+  color: oklch(28% 0.02 280);
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+x-dc {
+  display: block;
+}
+
+.bw-page-shell {
+  min-height: 100vh;
+  background: oklch(96.5% 0.012 85);
+}
+
+.bw-card-surface {
+  background: oklch(99% 0.004 90);
+}

@@ -1,0 +1,47 @@
+(function () {
+  window.BWData = {
+    STEP_META: [
+      { key: 'pain', label: 'Pain Experience', hue: 280, shape: 'circle', subtitle: 'Tap to begin' },
+      { key: 'place', label: 'Place & People', hue: 230, shape: 'square', subtitle: 'Where and who' },
+      { key: 'lens', label: 'Through Metaphors', hue: 165, shape: 'diamond', subtitle: 'How you saw it' },
+      { key: 'approach', label: 'My Approach', hue: 140, shape: 'triangle', subtitle: 'How you responded' },
+      { key: 'handled', label: 'How I Handled It', hue: 70, shape: 'circle', subtitle: 'What you practiced' },
+      { key: 'next', label: 'Next Care Move', hue: 30, shape: 'square', subtitle: 'What might help' },
+    ],
+    METAPHORS: [
+      { key: 'shadow', label: 'Shadow', desc: 'It felt like something always there, following me around.' },
+      { key: 'storm', label: 'Storm', desc: 'It felt unpredictable and intense, coming in waves.' },
+      { key: 'cage', label: 'Cage', desc: 'It felt like being restricted, my freedom limited.' },
+      { key: 'companion', label: 'Companion', desc: 'It felt like a constant presence, part of daily life.' },
+      { key: 'battle', label: 'Battle', desc: 'It felt like fighting something strong.' },
+      { key: 'weight', label: 'Heavy Weight', desc: 'It felt heavy weight, dragging me down.' },
+      { key: 'fog', label: 'Fog', desc: 'It felt cloudy, dulling my thinking/awareness.' },
+      { key: 'fire', label: 'Fire', desc: 'It felt burning and sharp.' },
+      { key: 'thief', label: 'Thief', desc: 'It felt like something stealing joys and shrinking life.' },
+      { key: 'teacher', label: 'Teacher', desc: 'It felt like something guiding me to my limits and strengths.' },
+      { key: 'signal', label: 'Signal', desc: 'It felt like a cue helping me understand my body’s needs.' },
+    ],
+    PLACES: ['Home', 'Work', 'Public space', 'Clinic', 'Traveling'],
+    PEOPLE: ['Alone', 'Partner', 'Family / loved ones', 'Friends', 'Coworkers'],
+    LENS_METAPHORS: ['Shadowed Self','Warrior','Actor','Invisible','Survivor','Fragile','Burden','Traveler','Squeaky Wheel','Shield','Companion','Leaky Boat','Guide','Scientist','Phoenix','Lighthouse','Architect','Anchor','Angel','Open Ear','Rock','Cheerleader','Mirror'].map((label) => ({ key: label.toLowerCase().replace(/\s+/g, ''), label })),
+    LENS_TABS: [
+      { key: 'selfLens', label: 'Myself', prompt: 'How did you see yourself?' },
+      { key: 'supportersLens', label: 'Supporters', prompt: 'How did you see your supporter/s?' },
+      { key: 'societyLens', label: 'Others', prompt: 'How did others see you?' },
+    ],
+    APPROACHES: [
+      { key: 'holding', label: 'Holding It Together', desc: 'Keeping things running' },
+      { key: 'managing', label: 'Managing the Load', desc: 'Pacing and adjusting' },
+      { key: 'stepping', label: 'Fighting to Be Seen', desc: 'Pushing to be noticed and heard' },
+      { key: 'pushing', label: 'Finding Bearings', desc: 'Reorienting yourself and adapting' },
+    ],
+    HANDLING: ['Reflecting', 'Expressing', 'Resting', 'Being mindful', 'Distracting myself'],
+    WORKED: ['Yes', 'No', 'Not sure'],
+    HELPED: ['Rest', 'Heat pack', 'Partner support', 'Quiet time', 'Breathing', 'Movement'],
+    MISSING: ['More flexibility', 'Less noise', 'More support', 'Privacy', 'Time'],
+    NEXT_PRACTICES: ['Rest', 'Being mindful', 'Gentle movement', 'Talking to someone', 'Adjusting plans'],
+    FROM_SELF: ['Patience', 'Rest', 'Permission to pause'],
+    FROM_SUPPORTERS: ['Check-in', 'Understanding', 'Help with tasks'],
+    FROM_SYSTEMS: ['Flexibility at work', 'Transportation', 'Medical support', 'Quiet space'],
+  };
+})();
