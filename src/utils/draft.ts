@@ -1,4 +1,6 @@
-export function blankDraft() {
+import type { Draft } from '../types';
+
+export function blankDraft(): Draft {
   return {
     title: '',
     timeOfDay: '',
@@ -31,7 +33,7 @@ export function blankDraft() {
   };
 }
 
-export function stepFilledFlags(draft) {
+export function stepFilledFlags(draft: Draft | null): boolean[] {
   const d = draft || blankDraft();
   return [
     !!d.painMetaphor,
@@ -43,8 +45,8 @@ export function stepFilledFlags(draft) {
   ];
 }
 
-export function buildSummaryClauses(draft) {
-  const clauses = [];
+export function buildSummaryClauses(draft: Draft): string[] {
+  const clauses: string[] = [];
   if (draft.painMetaphor) clauses.push(`This episode felt like a ${draft.painMetaphor.toLowerCase()}.`);
   if (draft.painNote) clauses.push(draft.painNote);
   if (draft.places.length || draft.people.length) {

@@ -1,11 +1,20 @@
-import StoryNodes from './StoryNodes.jsx';
+import StoryNodes from './StoryNodes';
+import type { Draft } from '../types';
+
+interface HomeProps {
+  draft: Draft | null;
+  onResume: () => void;
+  onStartNew: () => void;
+  onGoPast: () => void;
+  onGoInsights: () => void;
+}
 
 function greeting() {
   const hour = new Date().getHours();
   return hour < 12 ? 'Good morning.' : hour < 18 ? 'Good afternoon.' : 'Good evening.';
 }
 
-export default function Home({ draft, onResume, onStartNew, onGoPast, onGoInsights }) {
+export default function Home({ draft, onResume, onStartNew, onGoPast, onGoInsights }: HomeProps) {
   return (
     <div className="bw-screen bw-screen--home">
       <div style={{ marginTop: 10 }}>

@@ -1,8 +1,17 @@
-import { STEP_META } from '../data/content.js';
-import { stepFilledFlags } from '../utils/draft.js';
-import StoryNodes from './StoryNodes.jsx';
+import { STEP_META } from '../data/content';
+import { stepFilledFlags } from '../utils/draft';
+import StoryNodes from './StoryNodes';
+import type { Draft } from '../types';
 
-export default function Overview({ draft, activeStep, onBack, onStepClick, onContinue }) {
+interface OverviewProps {
+  draft: Draft;
+  activeStep: number;
+  onBack: () => void;
+  onStepClick: (step: number) => void;
+  onContinue: () => void;
+}
+
+export default function Overview({ draft, activeStep, onBack, onStepClick, onContinue }: OverviewProps) {
   const filled = stepFilledFlags(draft);
   const anyFilled = filled.some(Boolean);
 

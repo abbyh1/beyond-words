@@ -1,7 +1,17 @@
-import { STEP_META } from '../data/content.js';
-import { stepFilledFlags } from '../utils/draft.js';
+import { STEP_META } from '../data/content';
+import { stepFilledFlags } from '../utils/draft';
+import type { Journey, PastView } from '../types';
 
-export default function Past({ pastJourneys, pastView, onSetList, onSetConstellation, onBack, onStartNew }) {
+interface PastProps {
+  pastJourneys: Journey[];
+  pastView: PastView;
+  onSetList: () => void;
+  onSetConstellation: () => void;
+  onBack: () => void;
+  onStartNew: () => void;
+}
+
+export default function Past({ pastJourneys, pastView, onSetList, onSetConstellation, onBack, onStartNew }: PastProps) {
   return (
     <div className="bw-screen">
       <div className="bw-header-row" style={{ padding: '20px 0 4px' }}>

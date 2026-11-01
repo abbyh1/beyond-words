@@ -1,9 +1,17 @@
-import { buildSummaryClauses } from '../utils/draft.js';
-import StoryNodes from './StoryNodes.jsx';
+import { buildSummaryClauses } from '../utils/draft';
+import StoryNodes from './StoryNodes';
+import type { Draft } from '../types';
+
+interface CompleteProps {
+  draft: Draft;
+  onBack: () => void;
+  onSave: () => void;
+  onShare: () => void;
+}
 
 const TAG_HUES = [70, 30, 140];
 
-export default function Complete({ draft, onBack, onSave, onShare }) {
+export default function Complete({ draft, onBack, onSave, onShare }: CompleteProps) {
   const clauses = buildSummaryClauses(draft);
   const storyText = clauses.length ? clauses.join(' ') : 'This episode is still taking shape — every piece you add fills in more of the story.';
   const dateDisplay = new Date(draft.createdAt || Date.now()).toLocaleDateString(undefined, {

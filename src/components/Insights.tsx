@@ -1,15 +1,24 @@
-function topByFrequency(values) {
-  const freq = {};
+import type { Journey } from '../types';
+
+interface InsightCard {
+  key: string;
+  hue: number;
+  eyebrow: string;
+  body: string;
+}
+
+function topByFrequency(values: string[]): { value: string; count: number } | null {
+  const freq: Record<string, number> = {};
   values.forEach((v) => { freq[v] = (freq[v] || 0) + 1; });
   const top = Object.keys(freq).sort((a, b) => freq[b] - freq[a])[0];
   return top ? { value: top, count: freq[top] } : null;
 }
 
-function buildInsightCards(pastJourneys) {
+function buildInsightCards(pastJourneys: Journey[]): InsightCard[] {
   if (pastJourneys.length < 2) return [];
-  const cards = [];
+  const cards: InsightCard[] = [];
 
-  const topMetaphor = topByFrequency(pastJourneys.map((j) => j.painMetaphor).filter(Boolean));
+  const topMetaphor = topByFrequency(pastJourneys.map((j) => j.painMetaphor).filter((m): m is string => !!m));
   if (topMetaphor && topMetaphor.count > 1) {
     cards.push({
       key: 'm', hue: 280, eyebrow: 'A recurring metaphor',
@@ -36,7 +45,13 @@ function buildInsightCards(pastJourneys) {
   return cards;
 }
 
-export default function Insights({ pastJourneys, onBack, onStartNew }) {
+interface InsightsProps {
+  pastJourneys: Journey[];
+  onBack: () => void;
+  onStartNew: () => void;
+}
+
+export default function Insights({ pastJourneys, onBack, onStartNew }: InsightsProps) {
   const cards = buildInsightCards(pastJourneys);
 
   return (

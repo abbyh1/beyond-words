@@ -1,4 +1,14 @@
-export default function Nav({ navOpen, onToggle, onNavigate, onStartNew, hasDraft }) {
+import type { Screen } from '../types';
+
+interface NavProps {
+  navOpen: boolean;
+  onToggle: () => void;
+  onNavigate: (screen: Screen) => void;
+  onStartNew: () => void;
+  hasDraft: boolean;
+}
+
+export default function Nav({ navOpen, onToggle, onNavigate, onStartNew, hasDraft }: NavProps) {
   const items = [
     { key: 'home', label: 'Home', onClick: () => onNavigate('home') },
     { key: 'new', label: 'New Episode', onClick: onStartNew },

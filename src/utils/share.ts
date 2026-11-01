@@ -1,10 +1,11 @@
-import { SHARE_LABELS } from '../data/content.js';
+import { SHARE_LABELS } from '../data/content';
+import type { Draft, ShareKey, ShareSections } from '../types';
 
-function sentence(parts) {
+function sentence(parts: (string | null | undefined)[]): string {
   return parts.filter(Boolean).join(' ');
 }
 
-function buildShareSections(draft) {
+function buildShareSections(draft: Draft): Record<ShareKey, string> {
   return {
     pain: sentence([
       draft.painMetaphor ? `This episode felt like a ${draft.painMetaphor.toLowerCase()}.` : '',
@@ -51,7 +52,7 @@ function buildShareSections(draft) {
   };
 }
 
-export function buildShareText(draft, shareSections) {
+export function buildShareText(draft: Draft, shareSections: ShareSections): string {
   const sections = buildShareSections(draft);
   const dateDisplay = new Date(draft.createdAt || Date.now()).toLocaleDateString(undefined, {
     month: 'long', day: 'numeric', year: 'numeric',
@@ -59,7 +60,7 @@ export function buildShareText(draft, shareSections) {
 
   const lines = [draft.title || 'Untitled episode', dateDisplay, ''];
 
-  Object.keys(SHARE_LABELS).forEach((key) => {
+  (Object.keys(SHARE_LABELS) as ShareKey[]).forEach((key) => {
     if (!shareSections[key] || !sections[key]) return;
     lines.push(`${SHARE_LABELS[key]}:`, sections[key], '');
   });
@@ -67,12 +68,12 @@ export function buildShareText(draft, shareSections) {
   return lines.join('\n').trim();
 }
 
-export function shareFileName(draft) {
+export function shareFileName(draft: Draft): string {
   const slug = (draft.title || 'pain-episode').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
   return `${slug || 'pain-episode'}.txt`;
 }
 
-export function downloadTextFile(filename, text) {
+export function downloadTextFile(filename: string, text: string): void {
   const blob = new Blob([text], { type: 'text/plain' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');

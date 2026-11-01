@@ -1,7 +1,17 @@
-import { TIME_OF_DAY } from '../data/content.js';
-import ChipList from './ChipList.jsx';
+import { TIME_OF_DAY } from '../data/content';
+import ChipList from './ChipList';
+import type { Draft } from '../types';
 
-export default function Setup({ draft, onBack, onTitleChange, onContextChange, onTimeOfDay, onBegin }) {
+interface SetupProps {
+  draft: Draft;
+  onBack: () => void;
+  onTitleChange: (value: string) => void;
+  onContextChange: (value: string) => void;
+  onTimeOfDay: (value: string) => void;
+  onBegin: () => void;
+}
+
+export default function Setup({ draft, onBack, onTitleChange, onContextChange, onTimeOfDay, onBegin }: SetupProps) {
   return (
     <div className="bw-screen bw-screen--fast">
       <div className="bw-header-row">

@@ -1,7 +1,15 @@
-import { STEP_META } from '../data/content.js';
-import { stepFilledFlags } from '../utils/draft.js';
+import { STEP_META } from '../data/content';
+import { stepFilledFlags } from '../utils/draft';
+import type { Draft } from '../types';
 
-export default function StoryNodes({ draft, size, variant = 'header', activeStep = null }) {
+interface StoryNodesProps {
+  draft: Draft;
+  size: number;
+  variant?: 'header' | 'mini' | 'hero';
+  activeStep?: number | null;
+}
+
+export default function StoryNodes({ draft, size, variant = 'header', activeStep = null }: StoryNodesProps) {
   const filled = stepFilledFlags(draft);
   const rowClass = variant === 'mini' ? 'bw-story-row bw-story-row--mini' : variant === 'hero' ? 'bw-story-row' : 'bw-story-row bw-story-row--header';
   const nodeClass = variant === 'mini' ? 'bw-node bw-node--mini' : 'bw-node';

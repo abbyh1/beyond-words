@@ -1,5 +1,15 @@
-export default function OptionCard({ item, selected, onClick, hue, variant = 'card' }) {
-  const label = item.label || item;
+import type { Option } from '../data/content';
+
+interface OptionCardProps {
+  item: Option;
+  selected: boolean;
+  onClick: () => void;
+  hue: number;
+  variant?: 'card' | 'compact' | 'row';
+}
+
+export default function OptionCard({ item, selected, onClick, hue, variant = 'card' }: OptionCardProps) {
+  const label = item.label;
   const desc = item.desc || '';
 
   return (

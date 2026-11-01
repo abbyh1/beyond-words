@@ -1,42 +1,46 @@
 import { useEffect, useRef, useState } from 'react';
-import { blankDraft, stepFilledFlags } from './utils/draft.js';
-import { buildShareText, downloadTextFile, shareFileName } from './utils/share.js';
-import Nav from './components/Nav.jsx';
-import Toast from './components/Toast.jsx';
-import Home from './components/Home.jsx';
-import Setup from './components/Setup.jsx';
-import Overview from './components/Overview.jsx';
-import StepScreen from './components/StepScreen.jsx';
-import Complete from './components/Complete.jsx';
-import Share from './components/Share.jsx';
-import Past from './components/Past.jsx';
-import Insights from './components/Insights.jsx';
+import { blankDraft, stepFilledFlags } from './utils/draft';
+import { buildShareText, downloadTextFile, shareFileName } from './utils/share';
+import Nav from './components/Nav';
+import Toast from './components/Toast';
+import Home from './components/Home';
+import Setup from './components/Setup';
+import Overview from './components/Overview';
+import StepScreen from './components/StepScreen';
+import Complete from './components/Complete';
+import Share from './components/Share';
+import Past from './components/Past';
+import Insights from './components/Insights';
+import type {
+  CustomDraftKind, CustomDrafts, Draft, Journey, LensField, MultiField, PastView, Screen,
+  ShareKey, ShareSections, SingleField,
+} from './types';
 
 const STEP_SCREEN = /^step[1-6]$/;
 
 export default function App() {
-  const [screen, setScreen] = useState('home');
-  const [draft, setDraft] = useState(null);
-  const [pastJourneys, setPastJourneys] = useState([]);
-  const [pastView, setPastView] = useState('list');
+  const [screen, setScreen] = useState<Screen>('home');
+  const [draft, setDraft] = useState<Draft | null>(null);
+  const [pastJourneys, setPastJourneys] = useState<Journey[]>([]);
+  const [pastView, setPastView] = useState<PastView>('list');
   const [activeStep, setActiveStep] = useState(1);
-  const [customDrafts, setCustomDrafts] = useState({ metaphor: '', approach: '', place: '', person: '' });
-  const [lensTab, setLensTab] = useState('selfLens');
-  const [shareSections, setShareSections] = useState({
+  const [customDrafts, setCustomDrafts] = useState<CustomDrafts>({ metaphor: '', approach: '', place: '', person: '' });
+  const [lensTab, setLensTab] = useState<LensField>('selfLens');
+  const [shareSections, setShareSections] = useState<ShareSections>({
     pain: true, place: true, lens: true, approach: true, handled: true, next: true,
   });
-  const [shareResult, setShareResult] = useState(null);
+  const [shareResult, setShareResult] = useState<string | null>(null);
   const [toast, setToast] = useState('');
   const [navOpen, setNavOpen] = useState(false);
-  const toastTimer = useRef(null);
+  const toastTimer = useRef<ReturnType<typeof setTimeout>>();
   const loaded = useRef(false);
 
   useEffect(() => {
     try {
       const rawDraft = localStorage.getItem('bw_draft');
       const rawPast = localStorage.getItem('bw_past');
-      if (rawDraft) setDraft(JSON.parse(rawDraft));
-      if (rawPast) setPastJourneys(JSON.parse(rawPast));
+      if (rawDraft) setDraft(JSON.parse(rawDraft) as Draft);
+      if (rawPast) setPastJourneys(JSON.parse(rawPast) as Journey[]);
     } catch (error) {
       console.warn('Could not load saved draft', error);
     }
@@ -61,17 +65,17 @@ export default function App() {
     }
   }, [pastJourneys]);
 
-  function flashToast(message) {
+  function flashToast(message: string) {
     setToast(message);
     clearTimeout(toastTimer.current);
     toastTimer.current = setTimeout(() => setToast(''), 1800);
   }
 
-  function go(next) {
+  function go(next: Screen) {
     setScreen(next);
   }
 
-  function navTo(next) {
+  function navTo(next: Screen) {
     setNavOpen(false);
     go(next);
   }
@@ -81,13 +85,13 @@ export default function App() {
     setScreen('setup');
   }
 
-  function updateDraft(patch) {
-    setDraft((d) => ({ ...d, ...patch }));
+  function updateDraft(patch: Partial<Draft>) {
+    setDraft((d) => ({ ...(d ?? blankDraft()), ...patch }));
   }
 
-  function goStep(step) {
+  function goStep(step: number) {
     setActiveStep(step);
-    setScreen(`step${step}`);
+    setScreen(`step${step}` as Screen);
   }
 
   function continueFlow() {
@@ -111,25 +115,29 @@ export default function App() {
     else goStep(activeStep + 1);
   }
 
-  function toggleSingle(field, value) {
-    setDraft((d) => ({ ...d, [field]: d[field] === value ? null : value }));
+  function toggleSingle(field: SingleField, value: string) {
+    setDraft((prev) => {
+      const d = prev ?? blankDraft();
+      return { ...d, [field]: d[field] === value ? null : value };
+    });
   }
 
-  function toggleMulti(field, value) {
-    setDraft((d) => {
+  function toggleMulti(field: MultiField, value: string) {
+    setDraft((prev) => {
+      const d = prev ?? blankDraft();
       const arr = d[field];
       const next = arr.includes(value) ? arr.filter((entry) => entry !== value) : [...arr, value];
       return { ...d, [field]: next };
     });
   }
 
-  function onCustomDraftChange(kind, value) {
+  function onCustomDraftChange(kind: CustomDraftKind, value: string) {
     setCustomDrafts((c) => ({ ...c, [kind]: value }));
   }
 
   function onCustomAddMetaphor() {
     const value = customDrafts.metaphor.trim();
-    if (!value) return;
+    if (!value || !draft) return;
     updateDraft({
       custom: { ...draft.custom, metaphor: [...draft.custom.metaphor, { key: `c_${Date.now()}`, label: value, desc: 'Your own words' }] },
       painMetaphor: value,
@@ -139,21 +147,21 @@ export default function App() {
 
   function onCustomAddPlace() {
     const value = customDrafts.place.trim();
-    if (!value) return;
+    if (!value || !draft) return;
     updateDraft({ customPlaces: [...(draft.customPlaces || []), value], places: [...draft.places, value] });
     onCustomDraftChange('place', '');
   }
 
   function onCustomAddPerson() {
     const value = customDrafts.person.trim();
-    if (!value) return;
+    if (!value || !draft) return;
     updateDraft({ customPeople: [...(draft.customPeople || []), value], people: [...draft.people, value] });
     onCustomDraftChange('person', '');
   }
 
   function onCustomAddApproach() {
     const value = customDrafts.approach.trim();
-    if (!value) return;
+    if (!value || !draft) return;
     updateDraft({
       custom: { ...draft.custom, approach: [...draft.custom.approach, { key: `c_${Date.now()}`, label: value, desc: 'Your own words' }] },
       approach: value,
@@ -162,6 +170,7 @@ export default function App() {
   }
 
   function saveJourney() {
+    if (!draft) return;
     const saved = { ...draft, id: `j_${Date.now()}`, savedAt: Date.now() };
     setPastJourneys((list) => [saved, ...list]);
     setDraft(null);
@@ -169,11 +178,12 @@ export default function App() {
     flashToast('Saved to your journeys');
   }
 
-  function toggleShareSection(key) {
+  function toggleShareSection(key: ShareKey) {
     setShareSections((s) => ({ ...s, [key]: !s[key] }));
   }
 
   async function confirmShare() {
+    if (!draft) return;
     const text = buildShareText(draft, shareSections);
 
     if (navigator.share) {
@@ -183,7 +193,7 @@ export default function App() {
         flashToast('Shared');
         return;
       } catch (error) {
-        if (error && error.name === 'AbortError') return;
+        if (error instanceof Error && error.name === 'AbortError') return;
         // fall through to clipboard/download below
       }
     }
@@ -194,7 +204,7 @@ export default function App() {
         setShareResult("Copied to your clipboard — paste it wherever you'd like.");
         flashToast('Copied to clipboard');
         return;
-      } catch (error) {
+      } catch {
         // fall through to download below
       }
     }

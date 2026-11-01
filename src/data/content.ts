@@ -1,4 +1,22 @@
-export const STEP_META = [
+import type { LensField, ShareKey } from '../types';
+
+export type NodeShape = 'circle' | 'square' | 'diamond' | 'triangle';
+
+export interface StepMeta {
+  key: string;
+  label: string;
+  hue: number;
+  shape: NodeShape;
+  subtitle: string;
+}
+
+export interface Option {
+  key: string;
+  label: string;
+  desc?: string;
+}
+
+export const STEP_META: StepMeta[] = [
   { key: 'pain', label: 'Pain Experience', hue: 280, shape: 'circle', subtitle: 'Tap to begin' },
   { key: 'place', label: 'Place & People', hue: 230, shape: 'square', subtitle: 'Where and who' },
   { key: 'lens', label: 'Through Metaphors', hue: 165, shape: 'diamond', subtitle: 'How you saw it' },
@@ -7,7 +25,7 @@ export const STEP_META = [
   { key: 'next', label: 'Next Care Move', hue: 30, shape: 'square', subtitle: 'What might help' },
 ];
 
-export const METAPHORS = [
+export const METAPHORS: Option[] = [
   { key: 'shadow', label: 'Shadow', desc: 'It felt like something always there, following me around.' },
   { key: 'storm', label: 'Storm', desc: 'It felt unpredictable and intense, coming in waves.' },
   { key: 'cage', label: 'Cage', desc: 'It felt like being restricted, my freedom limited.' },
@@ -24,19 +42,19 @@ export const METAPHORS = [
 export const PLACES = ['Home', 'Work', 'Public space', 'Clinic', 'Traveling'];
 export const PEOPLE = ['Alone', 'Partner', 'Family / loved ones', 'Friends', 'Coworkers'];
 
-export const LENS_METAPHORS = [
+export const LENS_METAPHORS: Option[] = [
   'Shadowed Self', 'Warrior', 'Actor', 'Invisible', 'Survivor', 'Fragile', 'Burden', 'Traveler',
   'Squeaky Wheel', 'Shield', 'Companion', 'Leaky Boat', 'Guide', 'Scientist', 'Phoenix', 'Lighthouse',
   'Architect', 'Anchor', 'Angel', 'Open Ear', 'Rock', 'Cheerleader', 'Mirror',
 ].map((label) => ({ key: label.toLowerCase().replace(/\s+/g, ''), label }));
 
-export const LENS_TABS = [
+export const LENS_TABS: { key: LensField; label: string; prompt: string }[] = [
   { key: 'selfLens', label: 'Myself', prompt: 'How did you see yourself?' },
   { key: 'supportersLens', label: 'Supporters', prompt: 'How did you see your supporter/s?' },
   { key: 'societyLens', label: 'Others', prompt: 'How did others see you?' },
 ];
 
-export const APPROACHES = [
+export const APPROACHES: Option[] = [
   { key: 'holding', label: 'Holding It Together', desc: 'Keeping things running' },
   { key: 'managing', label: 'Managing the Load', desc: 'Pacing and adjusting' },
   { key: 'stepping', label: 'Fighting to Be Seen', desc: 'Pushing to be noticed and heard' },
@@ -54,7 +72,7 @@ export const FROM_SYSTEMS = ['Flexibility at work', 'Transportation', 'Medical s
 
 export const TIME_OF_DAY = ['Morning', 'Afternoon', 'Evening', 'Night'];
 
-export const SHARE_LABELS = {
+export const SHARE_LABELS: Record<ShareKey, string> = {
   pain: 'Pain metaphor',
   place: 'Place & people',
   lens: 'Self & others',

@@ -1,12 +1,35 @@
 import {
   STEP_META, METAPHORS, PLACES, PEOPLE, LENS_METAPHORS, LENS_TABS, APPROACHES,
   HANDLING, WORKED, HELPED, MISSING, NEXT_PRACTICES, FROM_SELF, FROM_SUPPORTERS, FROM_SYSTEMS,
-} from '../data/content.js';
-import OptionCard from './OptionCard.jsx';
-import ChipList from './ChipList.jsx';
-import StoryNodes from './StoryNodes.jsx';
+} from '../data/content';
+import OptionCard from './OptionCard';
+import ChipList from './ChipList';
+import StoryNodes from './StoryNodes';
+import type {
+  CustomDraftKind, CustomDrafts, Draft, LensField, MultiField, NoteField, SingleField,
+} from '../types';
 
-function Step1Pain({ draft, customDrafts, onToggleSingle, onNoteChange, onCustomDraftChange, onCustomAddMetaphor }) {
+interface StepScreenProps {
+  draft: Draft;
+  stepNumber: number;
+  activeStep: number;
+  customDrafts: CustomDrafts;
+  lensTab: LensField;
+  onSetLensTab: (tab: LensField) => void;
+  onBack: () => void;
+  onSkip: () => void;
+  onPrimary: () => void;
+  onToggleSingle: (field: SingleField, value: string) => void;
+  onToggleMulti: (field: MultiField, value: string) => void;
+  onNoteChange: (field: NoteField, value: string) => void;
+  onCustomDraftChange: (kind: CustomDraftKind, value: string) => void;
+  onCustomAddMetaphor: () => void;
+  onCustomAddPlace: () => void;
+  onCustomAddPerson: () => void;
+  onCustomAddApproach: () => void;
+}
+
+function Step1Pain({ draft, customDrafts, onToggleSingle, onNoteChange, onCustomDraftChange, onCustomAddMetaphor }: StepScreenProps) {
   return (
     <>
       <div className="bw-title-lg bw-quicksand">What did this pain feel like?</div>
@@ -46,7 +69,7 @@ function Step1Pain({ draft, customDrafts, onToggleSingle, onNoteChange, onCustom
   );
 }
 
-function Step2Place({ draft, customDrafts, onToggleMulti, onNoteChange, onCustomDraftChange, onCustomAddPlace, onCustomAddPerson }) {
+function Step2Place({ draft, customDrafts, onToggleMulti, onNoteChange, onCustomDraftChange, onCustomAddPlace, onCustomAddPerson }: StepScreenProps) {
   return (
     <>
       <div className="bw-title-lg bw-quicksand">Where did this happen, and who was around?</div>
@@ -100,7 +123,7 @@ function Step2Place({ draft, customDrafts, onToggleMulti, onNoteChange, onCustom
   );
 }
 
-function Step3Lens({ draft, lensTab, onSetLensTab, onToggleSingle, onNoteChange }) {
+function Step3Lens({ draft, lensTab, onSetLensTab, onToggleSingle, onNoteChange }: StepScreenProps) {
   const activeTab = LENS_TABS.find((tab) => tab.key === lensTab) || LENS_TABS[0];
   return (
     <>
@@ -156,7 +179,7 @@ function Step3Lens({ draft, lensTab, onSetLensTab, onToggleSingle, onNoteChange 
   );
 }
 
-function Step4Approach({ draft, customDrafts, onToggleSingle, onNoteChange, onCustomDraftChange, onCustomAddApproach }) {
+function Step4Approach({ draft, customDrafts, onToggleSingle, onNoteChange, onCustomDraftChange, onCustomAddApproach }: StepScreenProps) {
   return (
     <>
       <div className="bw-title-lg bw-quicksand">What approach did you take?</div>
@@ -198,7 +221,7 @@ function Step4Approach({ draft, customDrafts, onToggleSingle, onNoteChange, onCu
   );
 }
 
-function Step5Handling({ draft, onToggleSingle, onToggleMulti, onNoteChange }) {
+function Step5Handling({ draft, onToggleSingle, onToggleMulti, onNoteChange }: StepScreenProps) {
   return (
     <>
       <div className="bw-title-lg bw-quicksand">How did you handle it?</div>
@@ -226,7 +249,7 @@ function Step5Handling({ draft, onToggleSingle, onToggleMulti, onNoteChange }) {
   );
 }
 
-function Step6Next({ draft, onToggleMulti, onNoteChange }) {
+function Step6Next({ draft, onToggleMulti, onNoteChange }: StepScreenProps) {
   return (
     <>
       <div className="bw-title-lg bw-quicksand">What might help next time?</div>
@@ -254,7 +277,7 @@ function Step6Next({ draft, onToggleMulti, onNoteChange }) {
   );
 }
 
-export default function StepScreen(props) {
+export default function StepScreen(props: StepScreenProps) {
   const { draft, stepNumber, activeStep, onBack, onSkip, onPrimary } = props;
   const stepMeta = STEP_META[stepNumber - 1] || STEP_META[0];
 
