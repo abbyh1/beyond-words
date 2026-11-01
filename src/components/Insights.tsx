@@ -61,7 +61,7 @@ export default function Insights({ pastJourneys, onBack, onStartNew }: InsightsP
         <div className="bw-header-row__title--strong bw-quicksand">Something to reflect on</div>
       </div>
       <div className="bw-screen--body" style={{ padding: '14px 0 32px', gap: 16 }}>
-        <div style={{ fontSize: 14, color: 'var(--text-secondary)' }}>
+        <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
           A few gentle things noticed across your maps. Nothing here is measured — only noticed.
         </div>
 

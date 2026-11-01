@@ -58,7 +58,7 @@ export default function Overview({ draft, activeStep, onBack, onStepClick, onCon
           <button type="button" className="bw-btn-primary bw-quicksand" onClick={onContinue}>
             {anyFilled ? 'Continue' : 'Begin Map'}
           </button>
-          <div style={{ textAlign: 'center', fontSize: 13, color: 'var(--text-muted-2)' }}>
+          <div style={{ textAlign: 'center', fontSize: '0.8125rem', color: 'var(--text-muted-2)' }}>
             You can pause, skip, or edit anytime.
           </div>
         </div>
